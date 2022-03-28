@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
+import Chat from './Chat';
 
 /**
  * Each user who is connected to a town is represented by a Player object
@@ -17,6 +18,9 @@ export default class Player {
 
   /** The current ConversationArea that the player is in, or undefined if they are not located within one */
   private _activeConversationArea?: ServerConversationArea;
+
+    /** The current Chat that the player is in, or undefined if they are not located within one */
+    private _activeChat?: Chat;
 
   constructor(userName: string) {
     this.location = {

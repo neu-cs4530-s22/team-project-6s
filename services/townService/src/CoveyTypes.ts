@@ -14,3 +14,9 @@ export type ChatMessage = {
   body: string;
   dateCreated: Date;
 };
+
+export type ChatLocation = {
+  x: number;
+  y: number;
+  radius: number;
+};
