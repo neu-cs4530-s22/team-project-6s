@@ -1,6 +1,8 @@
 import { customAlphabet, nanoid } from 'nanoid';
+import { forEach } from 'ramda';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
+import Chat from '../types/Chat';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -54,6 +56,10 @@ export default class CoveyTownController {
     return this._conversationAreas;
   }
 
+  get chats(): Chat[] {
+    return this._chats;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -68,6 +74,9 @@ export default class CoveyTownController {
 
   /** The list of currently active ConversationAreas in this town */
   private _conversationAreas: ServerConversationArea[] = [];
+
+  /** The list of currently active chats in this town */
+  private _chats: Chat[] = [];
 
   private readonly _coveyTownID: string;
 
@@ -153,6 +162,25 @@ export default class CoveyTownController {
       }
     }
 
+    // see if player is within chatting distance of another
+    if (!player.activeConversationArea) {
+      // check if player has moved outside of chat 
+      if (player.activeChat && !player.isWithinChat(player.activeChat)){
+        this.removePlayerFromChat(player, player.activeChat);
+      }
+      // check if player's new location is within an existing chat & add them
+      for (let i=0; i < this.chats.length; i++) {
+        if (player.isWithinChat(this.chats[i])) {
+          player.activeChat = this.chats[i];
+          break;
+        }
+      }
+
+      if(!player.activeChat){
+        this.addChat(player);
+      }
+    }
+
     this._listeners.forEach(listener => listener.onPlayerMoved(player));
   }
 
@@ -173,6 +201,25 @@ export default class CoveyTownController {
     } else {
       this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
     }
+  }
+
+
+  /**
+   * Removes a player from a chat, updating the chats's occupants list, 
+   * 
+   * Updates the player's activeConversationArea property.
+   * 
+   * POSSIBLY NEED TO ADD LISTENER EVENTS HERE 
+   * 
+   * @param player Player to remove from conversation area
+   * @param chat Chat to remove player from
+   */
+   removePlayerFromChat(player: Player, chat: Chat) : void {
+    chat.occupantsByID.splice(chat.occupantsByID.findIndex(p=>p === player.id), 1);
+    if (chat.occupantsByID.length === 0) {
+      this._conversationAreas.splice(this._chats.findIndex(ch => ch === chat), 1);
+    } 
+    player.activeChat = undefined;
   }
 
   /**
@@ -206,6 +253,38 @@ export default class CoveyTownController {
     playersInThisConversation.forEach(player => {player.activeConversationArea = newArea;});
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
+    return true;
+  }
+
+  /**
+   * Creates a new chat conversation in this town if there are two or more players that are close to each other
+   *
+   * Adds any players who are in the region defined by the chat conversation to it.
+   *
+   * Notifies any CoveyTownListeners that a chat conversation has been created
+   *
+   * @param anchorPlayer Information describing the player that moved and could become an anchor player.
+   *
+   * @returns true if the chat conversation is successfully created, or false if not
+   */
+   addChat(_anchorPlayer: Player): boolean {
+    // make sure they're not already in a chat convo
+    let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer));
+    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChat === undefined)
+    playersAroundAnchorPlayer.push(_anchorPlayer)
+
+    const playersInNewChatArea = playersAroundAnchorPlayer
+
+    if (playersInNewChatArea.length === 1) {
+      return false
+    }
+    else {
+      const newChat :Chat = new Chat(_anchorPlayer);
+      // if its active chat is not defined, set it to the new chat 
+      playersInNewChatArea.forEach(player => player.activeChat = newChat);
+      newChat.occupantsByID = playersInNewChatArea.map((player) => player.id);
+    }
+    // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
   }
 
@@ -248,6 +327,10 @@ export default class CoveyTownController {
   onChatMessage(message: ChatMessage): void {
     this._listeners.forEach(listener => listener.onChatMessage(message));
   }
+
+/*   onChatCreate(chat: Chat): void {
+    this._listeners.forEach(listener => listener.onChatCreate(chat));
+  } */
 
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the

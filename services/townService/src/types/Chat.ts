@@ -2,6 +2,8 @@ import { nanoid } from 'nanoid';
 import { ChatLocation } from '../CoveyTypes';
 import Player from './Player';
 
+export const CHAT_RADIUS = 150;
+
 /**
  * Each chat that connected to a town is represented by a Chat object
  */
@@ -11,14 +13,17 @@ import Player from './Player';
   
     /** The unique identifier for this chat * */
     private readonly _id: string;
+
+    public occupantsByID: string[];
   
     constructor(anchorPlayer: Player) {
       this.location = {
         x: anchorPlayer.location.x,
         y: anchorPlayer.location.y,
-        radius: 5
+        radius: CHAT_RADIUS,
       };
       this._id = nanoid();
+      this.occupantsByID = [anchorPlayer.id];
     }
 
 
