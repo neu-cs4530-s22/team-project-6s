@@ -24,8 +24,9 @@ export const CHAT_RADIUS = 150;
       };
       this._id = nanoid();
       this.occupantsByID = [anchorPlayer.id];
+      anchorPlayer.activeChat = this;
     }
 
 
-    
+
  }
