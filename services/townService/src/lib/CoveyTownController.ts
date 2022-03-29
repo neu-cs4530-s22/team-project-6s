@@ -271,18 +271,15 @@ export default class CoveyTownController {
     // make sure they're not already in a chat convo
     let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer));
     playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChat === undefined)
-    playersAroundAnchorPlayer.push(_anchorPlayer)
 
-    const playersInNewChatArea = playersAroundAnchorPlayer
-
-    if (playersInNewChatArea.length === 1) {
+    if (playersAroundAnchorPlayer.length === 0) {
       return false
     }
     else {
       const newChat :Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
-      playersInNewChatArea.forEach(player => player.activeChat = newChat);
-      newChat.occupantsByID = playersInNewChatArea.map((player) => player.id);
+      playersAroundAnchorPlayer.forEach(player => player.activeChat = newChat);
+      newChat.occupantsByID = playersAroundAnchorPlayer.map((player) => player.id);
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
