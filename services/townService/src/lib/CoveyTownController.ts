@@ -1,5 +1,4 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { forEach } from 'ramda';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import Chat from '../types/Chat';
@@ -282,7 +281,7 @@ export default class CoveyTownController {
       const newChat :Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
       playersAroundAnchorPlayer.forEach(player => player.activeChat = newChat);
-      newChat.occupantsByID = playersAroundAnchorPlayer.map((player) => player.id);
+      playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
