@@ -10,6 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import { CHAT_RADIUS } from '../types/Chat';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -287,6 +288,159 @@ describe('CoveyTownController', () => {
       const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
       testingTown.updatePlayerLocation(player, newLocation);
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
+    });
+    it('player cannot be added to chat when conversation area is defined', async () =>{
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+  
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      const location:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label };
+      const location2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: newConversationArea.label };
+  
+      testingTown.updatePlayerLocation(player, location);
+      testingTown.updatePlayerLocation(player2, location2);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+    });
+    it('chat is created when second player walks up to first player', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+  
+      const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+ 
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationOutOfChat);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+    });
+    it('active chat property should be undefined when players have left chat radius', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+  
+      const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      const locationOutOfChat2:UserLocation = { moving: false, rotation: 'front', x: 1000, y: 1000, conversationLabel: undefined };
+  
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+  
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+       testingTown.updatePlayerLocation(player, locationOutOfChat);
+      testingTown.updatePlayerLocation(player2, locationOutOfChat2);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+    });  
+  });
+  describe('addChat', () => {
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should return false if there are no players within a chat radius of the anchor player', () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      testingTown.addPlayer(anchorPlayer);
+      testingTown.addPlayer(player2);
+      expect(testingTown.players.length).toBe(2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 25 + (2 * CHAT_RADIUS), y: 25 + (2 * CHAT_RADIUS), conversationLabel: undefined };
+      player2.location = newLocation;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(false);
+    });
+    it('should return true if there are two players within a chat radius', () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      testingTown.addPlayer(anchorPlayer);
+      testingTown.addPlayer(player2);
+      expect(testingTown.players.length).toBe(2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+    });
+    it('should add the new chat to the town\'s list of chats', () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      testingTown.addPlayer(anchorPlayer);
+      testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(testingTown.chats.length).toBe(1);
+    });
+    it('should update the chat\'s list of occupants', () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      testingTown.addPlayer(anchorPlayer);
+      testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(testingTown.chats[0].occupantsByID.length).toBe(2);
+    });
+    it('should update the active chat area of the players when a new chat is created', () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      testingTown.addPlayer(anchorPlayer);
+      testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(testingTown.players[0].activeChat).not.toBe(undefined);
+      expect(testingTown.players[0].activeChat).toBe(testingTown.chats[0]);
+      expect(testingTown.players[1].activeChat).not.toBe(undefined);
+      expect(testingTown.players[1].activeChat).toBe(testingTown.chats[0]);
     });
   });
 });

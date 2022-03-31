@@ -282,6 +282,7 @@ export default class CoveyTownController {
       // if its active chat is not defined, set it to the new chat 
       playersAroundAnchorPlayer.forEach(player => player.activeChat = newChat);
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
+      this._chats.push(newChat);
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
