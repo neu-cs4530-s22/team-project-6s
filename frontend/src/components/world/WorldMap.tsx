@@ -8,7 +8,9 @@ import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
+import ChatWindow from '../Chat/ChatWindow';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
+// import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 
@@ -519,7 +521,7 @@ class CoveyGameScene extends Phaser.Scene {
             this.emitMovement(localLastLocation);
           }
         } else {
-          if (cursorKeys.space.isDown) {
+          if (cursorKeys.space.isDown && this.player) {
             const newConversation = new ConversationArea(
               conversationLabel,
               BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),
@@ -669,7 +671,7 @@ export default function WorldMap(): JSX.Element {
       parent: 'map-container',
       pixelArt: true,
       autoRound: 10,
-      minWidth: 800,
+      minWidth: 500,
       fps: { target: 30 },
       powerPreference: 'high-performance',
       minHeight: 600,
@@ -745,6 +747,9 @@ export default function WorldMap(): JSX.Element {
   return (
     <div id='app-container'>
       {newConversationModal}
+      <div id='chat'>
+        <ChatWindow />
+      </div>
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />
