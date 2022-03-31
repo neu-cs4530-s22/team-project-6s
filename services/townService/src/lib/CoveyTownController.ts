@@ -216,8 +216,11 @@ export default class CoveyTownController {
    */
    removePlayerFromChat(player: Player, chat: Chat) : void {
     chat.occupantsByID.splice(chat.occupantsByID.findIndex(p=>p === player.id), 1);
-    if (chat.occupantsByID.length === 0) {
-      this._conversationAreas.splice(this._chats.findIndex(ch => ch === chat), 1);
+
+    // destroy chat if there is only one player left in it
+    if (chat.occupantsByID.length === 1) {
+      this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
+      this._players.map(p => { if (p.activeChat ===chat){p.activeChat = undefined}});
     } 
     player.activeChat = undefined;
   }
@@ -269,7 +272,7 @@ export default class CoveyTownController {
    */
    addChat(_anchorPlayer: Player): boolean {
     // make sure they're not already in a chat convo
-    let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer));
+    let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer) && player !== _anchorPlayer);
     playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChat === undefined)
 
     if (playersAroundAnchorPlayer.length === 0) {

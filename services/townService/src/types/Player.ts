@@ -84,7 +84,7 @@ export default class Player {
     const x = this.location.x - anchorPlayer.location.x
     const y = this.location.y - anchorPlayer.location.y
     return (
-      Math.sqrt(x**2 - y**2) < CHAT_RADIUS
+      Math.sqrt(x**2 + y**2) < CHAT_RADIUS
     );
   }
 
