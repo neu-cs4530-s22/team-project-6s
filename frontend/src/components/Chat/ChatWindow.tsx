@@ -14,9 +14,9 @@ export default function ChatWindow(): JSX.Element {
         height='100%'
         divider={<StackDivider borderColor='gray.200' />}
         borderRadius='4px'>
-          <Heading fontSize='xl' as='h1'>
+          <Heading data-testid="heading" fontSize='xl' as='h1'>
             Chat with others!
-            <Tooltip label="Go near another player to start a chat">?</Tooltip>
+            <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
           </Heading>
         <ChatConversation />
         <Textbox />
