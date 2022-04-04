@@ -329,8 +329,9 @@ describe('CoveyTownController', () => {
       testingTown.updatePlayerLocation(player2, locationInChat2);
       expect(player.activeChat).toBeDefined();
       expect(player2.activeChat).toBeDefined();
+      expect(player.activeChat).toBe(player2.activeChat); 
     });
-    it('active chat property should be undefined when players have left chat radius', async () =>{
+    it('should destroy the chat when only one player is left and update the players\' active chats and the town\'s list of chats', async () =>{
       const player = new Player(nanoid());
       await testingTown.addPlayer(player);
   
@@ -341,7 +342,6 @@ describe('CoveyTownController', () => {
       expect(player2.activeChat).toBeUndefined();
   
       const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
-      const locationOutOfChat2:UserLocation = { moving: false, rotation: 'front', x: 1000, y: 1000, conversationLabel: undefined };
   
       const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
       const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
@@ -350,10 +350,11 @@ describe('CoveyTownController', () => {
       testingTown.updatePlayerLocation(player2, locationInChat2);
       expect(player.activeChat).toBeDefined();
       expect(player2.activeChat).toBeDefined();
-       testingTown.updatePlayerLocation(player, locationOutOfChat);
-      testingTown.updatePlayerLocation(player2, locationOutOfChat2);
+      testingTown.updatePlayerLocation(player, locationOutOfChat);
       expect(player.activeChat).toBeUndefined();
       expect(player2.activeChat).toBeUndefined();
+
+      expect(testingTown.chats.length).toBe(0);
     });  
   });
   describe('addChat', () => {
@@ -422,7 +423,10 @@ describe('CoveyTownController', () => {
       player2.location = newLocation;
 
       testingTown.addChat(anchorPlayer);
-      expect(testingTown.chats[0].occupantsByID.length).toBe(2);
+      const occupants = testingTown.chats[0].occupantsByID;
+      expect(occupants.length).toBe(2);
+      expect(occupants[0]).toBe(anchorPlayer.id);
+      expect(occupants[1]).toBe(player2.id);
     });
     it('should update the active chat area of the players when a new chat is created', () => {
       const anchorPlayer = new Player(nanoid());
