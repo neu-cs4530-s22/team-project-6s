@@ -293,6 +293,28 @@ export default class CoveyTownController {
   }
 
   /**
+   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
+   * 
+   * @param chat the chat that recieved a new message 
+   * @param sendingPlayer the player who sent the chat
+   * @param body the content of the chat
+   * @param dateCreated when the chat was sent 
+   * @param privateMessage if the chat was a private message
+   * @param privateMessageRecipientId who the private message was sent to 
+   */
+  createChatMessageFromUserInput(chat: Chat, sendingPlayer: Player, body: string, dateCreated: Date, 
+    privateMessage: Boolean, privateMessageRecipientId: string|undefined ): void {
+      const message = {author :  sendingPlayer.id,
+        sid: nanoid(),
+        body: body,
+        dateCreated: dateCreated,
+        privateMessage: privateMessage,
+        privateMessageRecipientId: privateMessageRecipientId }
+
+        chat.addChatMessage(message);
+  }
+
+  /**
    * Detects whether two bounding boxes overlap and share any points
    * 
    * @param box1 
