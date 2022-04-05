@@ -647,4 +647,151 @@ describe('CoveyTownController', () => {
       expect(player5.activeChat).toBeUndefined();
     });
   });
+
+  describe('removePlayerFromChat', () =>{
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+
+    it('should remove the players id from the chats occupantsById and update player.activeChat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      const player3 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
+
+      const locationWithinRadius1 : UserLocation = { moving: false, rotation: 'front', x: 21, y: 21, conversationLabel: undefined };
+      const locationWithinRadius2 : UserLocation = { moving: false, rotation: 'front', x: 22, y: 22, conversationLabel: undefined };
+      const locationWithinRadius3 : UserLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+
+      anchorPlayer.location = locationWithinRadius1;
+      player2.location = locationWithinRadius2;
+      player3.location = locationWithinRadius3;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+
+      expect(anchorPlayer.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+
+      expect(anchorPlayer.activeChat).toEqual(player2.activeChat);
+      expect(player2.activeChat).toEqual(player3.activeChat);
+
+      const chat = player2.activeChat;
+
+      expect(testingTown.chats.length).toBe(1);
+
+      expect(chat?.occupantsByID.length).toBe(3);
+      expect(chat?.occupantsByID).toContain(anchorPlayer.id);
+      expect(chat?.occupantsByID).toContain(player2.id);
+      expect(chat?.occupantsByID).toContain(player3.id);
+
+      if (chat){
+        testingTown.removePlayerFromChat(player2, chat);
+      }
+
+      expect(testingTown.chats.length).toBe(1);
+
+      expect(chat?.occupantsByID.length).toBe(2);
+      expect(chat?.occupantsByID).toContain(anchorPlayer.id);
+      expect(chat?.occupantsByID).not.toContain(player2.id);
+      expect(chat?.occupantsByID).toContain(player3.id);
+
+      expect(anchorPlayer.activeChat).toBe(chat);
+      expect(player2.activeChat).toBeUndefined();
+      expect(player3.activeChat).toBe(chat);
+    });
+
+    it('should not destroy chat if anchor leaves and there are still 2 or more players left in chat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      const player3 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
+
+      const locationWithinRadius1 : UserLocation = { moving: false, rotation: 'front', x: 21, y: 21, conversationLabel: undefined };
+      const locationWithinRadius2 : UserLocation = { moving: false, rotation: 'front', x: 22, y: 22, conversationLabel: undefined };
+      const locationWithinRadius3 : UserLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+
+      anchorPlayer.location = locationWithinRadius1;
+      player2.location = locationWithinRadius2;
+      player3.location = locationWithinRadius3;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+
+      expect(anchorPlayer.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+
+      expect(anchorPlayer.activeChat).toEqual(player2.activeChat);
+      expect(player2.activeChat).toEqual(player3.activeChat);
+
+      const chat = anchorPlayer.activeChat;
+
+      expect(testingTown.chats.length).toBe(1);
+
+      expect(chat?.occupantsByID.length).toBe(3);
+      expect(chat?.occupantsByID).toContain(anchorPlayer.id);
+      expect(chat?.occupantsByID).toContain(player2.id);
+      expect(chat?.occupantsByID).toContain(player3.id);
+
+      if (chat){
+        testingTown.removePlayerFromChat(anchorPlayer, chat);
+      }
+
+      expect(testingTown.chats.length).toBe(1);
+
+      expect(chat?.occupantsByID.length).toBe(2);
+      expect(chat?.occupantsByID).not.toContain(anchorPlayer.id);
+      expect(chat?.occupantsByID).toContain(player2.id);
+      expect(chat?.occupantsByID).toContain(player3.id);
+
+      expect(anchorPlayer.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBe(chat);
+      expect(player3.activeChat).toBe(chat);
+    });
+    it('should destroy chat if player leaves and there is only 1 player left in chat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      const locationWithinRadius1 : UserLocation = { moving: false, rotation: 'front', x: 21, y: 21, conversationLabel: undefined };
+      const locationWithinRadius2 : UserLocation = { moving: false, rotation: 'front', x: 22, y: 22, conversationLabel: undefined };
+
+      anchorPlayer.location = locationWithinRadius1;
+      player2.location = locationWithinRadius2;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+
+      expect(anchorPlayer.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+
+      expect(anchorPlayer.activeChat).toEqual(player2.activeChat);
+
+      const chat = player2.activeChat;
+
+      expect(testingTown.chats.length).toBe(1);
+
+      expect(chat?.occupantsByID.length).toBe(2);
+      expect(chat?.occupantsByID).toContain(anchorPlayer.id);
+      expect(chat?.occupantsByID).toContain(player2.id);
+
+      if (chat){
+        testingTown.removePlayerFromChat(player2, chat);
+      }
+
+      expect(testingTown.chats.length).toBe(0);
+
+      expect(anchorPlayer.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+    });
+  });
 });
