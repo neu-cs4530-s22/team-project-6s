@@ -10,6 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import { CHAT_RADIUS } from '../types/Chat';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -287,6 +288,363 @@ describe('CoveyTownController', () => {
       const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
       testingTown.updatePlayerLocation(player, newLocation);
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
+    });
+    it('player cannot be added to chat when conversation area is defined', async () =>{
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+  
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      const location:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: newConversationArea.label };
+      const location2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: newConversationArea.label };
+  
+      testingTown.updatePlayerLocation(player, location);
+      testingTown.updatePlayerLocation(player2, location2);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+    });
+    it('chat is created when second player walks up to first player', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+  
+      const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+ 
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationOutOfChat);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player.activeChat).toBe(player2.activeChat); 
+    });
+    it('should not change anything if a player moves within their current chat\'s radius', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+  
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+      const locationInChat3:UserLocation = { moving: false, rotation: 'front', x: 9, y: 9, conversationLabel: undefined };
+ 
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player.activeChat).toBe(player2.activeChat); 
+
+      testingTown.updatePlayerLocation(player, locationInChat3);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player.activeChat).toBe(player2.activeChat); 
+    });
+    it('should destroy the chat when only one player is left and update the players\' active chats and the town\'s list of chats', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+  
+      const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+  
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+  
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      testingTown.updatePlayerLocation(player, locationOutOfChat);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+
+      expect(testingTown.chats.length).toBe(0);
+    });  
+    it('should not destroy the chat when a player leaves if there are at least two other players left and update the chat\'s list of occupants and the players\' active chats', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+
+      const player3 = new Player(nanoid());
+      await testingTown.addPlayer(player3);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      expect(player3.activeChat).toBeUndefined();
+  
+      const locationOutOfChat:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+  
+      const locationInChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+      const locationInChat3:UserLocation = { moving: false, rotation: 'front', x: 9, y: 9, conversationLabel: undefined };
+  
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      testingTown.updatePlayerLocation(player3, locationInChat3);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+      expect(player2.activeChat?.occupantsByID.length).toBe(3);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player.id);
+      testingTown.updatePlayerLocation(player, locationOutOfChat);
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+      expect(player2.activeChat?.occupantsByID.length).toBe(2);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player2.id);
+    });
+    it('should update everything accordingly when one player moves from one chat into another player\'s chat radius', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+
+      const player3 = new Player(nanoid());
+      await testingTown.addPlayer(player3);
+
+      const player4 = new Player(nanoid());
+      await testingTown.addPlayer(player4);
+
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      expect(player3.activeChat).toBeUndefined();
+      expect(player4.activeChat).toBeUndefined();
+  
+      const locationOutOfFirstChat1:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      const locationOutOfFirstChat2:UserLocation = { moving: false, rotation: 'front', x: 599, y: 599, conversationLabel: undefined };
+  
+      const locationInFirstChat:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInFirstChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+      const locationInFirstChat3:UserLocation = { moving: false, rotation: 'front', x: 9, y: 9, conversationLabel: undefined };
+  
+      testingTown.updatePlayerLocation(player, locationInFirstChat);
+      testingTown.updatePlayerLocation(player2, locationInFirstChat2);
+      testingTown.updatePlayerLocation(player3, locationInFirstChat3);
+      testingTown.updatePlayerLocation(player4, locationOutOfFirstChat1);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+      expect(player4.activeChat).toBeUndefined();
+      expect(player2.activeChat?.occupantsByID.length).toBe(3);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player.id);
+      testingTown.updatePlayerLocation(player, locationOutOfFirstChat2);
+      expect(player.activeChat).toBe(player4.activeChat);
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+      expect(player2.activeChat?.occupantsByID.length).toBe(2);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player2.id);
+      expect(player4.activeChat?.occupantsByID.length).toBe(2);
+      expect(player4.activeChat?.occupantsByID[0]).toBe(player.id);
+    });
+    it('should update everything accordingly when one player moves from one chat to another existing chat', async () =>{
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+  
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+
+      const player3 = new Player(nanoid());
+      await testingTown.addPlayer(player3);
+
+      const player4 = new Player(nanoid());
+      await testingTown.addPlayer(player4);
+
+      const player5 = new Player(nanoid());
+      await testingTown.addPlayer(player5);
+  
+      expect(player.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      expect(player3.activeChat).toBeUndefined();
+      expect(player4.activeChat).toBeUndefined();
+      expect(player5.activeChat).toBeUndefined();
+  
+      const locationInSecondChat1:UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      const locationInSecondChat2:UserLocation = { moving: false, rotation: 'front', x: 599, y: 599, conversationLabel: undefined };
+      const locationInSecondChat3:UserLocation = { moving: false, rotation: 'front', x: 601, y: 601, conversationLabel: undefined };
+  
+      const locationInFirstChat1:UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInFirstChat2:UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+      const locationInFirstChat3:UserLocation = { moving: false, rotation: 'front', x: 9, y: 9, conversationLabel: undefined };
+  
+      testingTown.updatePlayerLocation(player, locationInFirstChat1);
+      testingTown.updatePlayerLocation(player2, locationInFirstChat2);
+      testingTown.updatePlayerLocation(player3, locationInFirstChat3);
+      testingTown.updatePlayerLocation(player4, locationInSecondChat1);
+      testingTown.updatePlayerLocation(player5, locationInSecondChat2);
+      expect(player.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeDefined();
+      expect(player4.activeChat).toBeDefined();
+      expect(player5.activeChat).toBeDefined();
+      expect(player2.activeChat?.occupantsByID.length).toBe(3);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player.id);
+      expect(player4.activeChat?.occupantsByID.length).toBe(2);
+      expect(player.activeChat).not.toBe(player4.activeChat);
+      testingTown.updatePlayerLocation(player, locationInSecondChat3);
+      expect(player2.activeChat?.occupantsByID.length).toBe(2);
+      expect(player2.activeChat?.occupantsByID[0]).toBe(player2.id);
+      expect(player4.activeChat?.occupantsByID.length).toBe(3);
+      expect(player.activeChat).toBe(player4.activeChat);
+    });
+  });
+  describe('addChat', () => {
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should return false if there are no players within a chat radius of the anchor player', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+      expect(testingTown.players.length).toBe(2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 25 + (2 * CHAT_RADIUS), y: 25 + (2 * CHAT_RADIUS), conversationLabel: undefined };
+      player2.location = newLocation;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(false);
+    });
+    it('should return true if there are two players within a chat radius', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+      expect(testingTown.players.length).toBe(2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+    });
+    it('should add the new chat to the town\'s list of chats', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(testingTown.chats.length).toBe(1);
+    });
+    it('should update the chat\'s list of occupants', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      const occupants = testingTown.chats[0].occupantsByID;
+      expect(occupants.length).toBe(2);
+      expect(occupants[0]).toBe(anchorPlayer.id);
+      expect(occupants[1]).toBe(player2.id);
+    });
+    it('should update the active chat area of the players when a new chat is created', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      let newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(testingTown.players[0].activeChat).not.toBe(undefined);
+      expect(testingTown.players[0].activeChat).toBe(testingTown.chats[0]);
+      expect(testingTown.players[1].activeChat).not.toBe(undefined);
+      expect(testingTown.players[1].activeChat).toBe(testingTown.chats[0]);
+    });
+    it('should only add the players that are in the anchor player\'s chat radius to the new chat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      const player3 = new Player(nanoid());
+      const player4 = new Player(nanoid());
+      const player5 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+      await testingTown.addPlayer(player3);
+      await testingTown.addPlayer(player4);
+      await testingTown.addPlayer(player5);
+      expect(testingTown.players.length).toBe(5);
+
+      expect(anchorPlayer.activeChat).toBeUndefined();
+      expect(player2.activeChat).toBeUndefined();
+      expect(player3.activeChat).toBeUndefined();
+      expect(player4.activeChat).toBeUndefined();
+      expect(player5.activeChat).toBeUndefined();
+
+      const anchorPlayerLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = anchorPlayerLocation;
+
+      const locationWithinRadius1 : UserLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = locationWithinRadius1;
+      const locationOutsideRadius1 : UserLocation = { moving: false, rotation: 'front', x: 600, y: 600, conversationLabel: undefined };
+      player3.location = locationOutsideRadius1;
+      const locationWithinRadius2 : UserLocation = { moving: false, rotation: 'front', x: 27, y: 27, conversationLabel: undefined };
+      player4.location = locationWithinRadius2;
+      const locationOutsideRadius2 : UserLocation = { moving: false, rotation: 'front', x: 25 - (2 * CHAT_RADIUS), y: 25 - (2 * CHAT_RADIUS), conversationLabel: undefined };
+      player5.location = locationOutsideRadius2;
+
+      const result = testingTown.addChat(anchorPlayer);
+      expect(result).toBe(true);
+
+      const occupants = testingTown.chats[0].occupantsByID;
+      expect(occupants.length).toBe(3);
+      expect(occupants[0]).toBe(anchorPlayer.id);
+      expect(occupants[1]).toBe(player2.id);
+      expect(occupants[2]).toBe(player4.id);
+
+      expect(anchorPlayer.activeChat).toBeDefined();
+      expect(player2.activeChat).toBeDefined();
+      expect(player3.activeChat).toBeUndefined();
+      expect(player4.activeChat).toBeDefined();
+      expect(player5.activeChat).toBeUndefined();
     });
   });
 });

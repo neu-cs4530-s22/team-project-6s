@@ -171,7 +171,10 @@ export default class CoveyTownController {
       // check if player's new location is within an existing chat & add them
       for (let i=0; i < this.chats.length; i++) {
         if (player.isWithinChat(this.chats[i])) {
-          player.activeChat = this.chats[i];
+          if (player.activeChat !== this.chats[i]) {
+            player.activeChat = this.chats[i];
+            this.chats[i].occupantsByID.push(player.id);
+          }
           break;
         }
       }
@@ -207,11 +210,11 @@ export default class CoveyTownController {
   /**
    * Removes a player from a chat, updating the chats's occupants list, 
    * 
-   * Updates the player's activeConversationArea property.
+   * Updates the player's activeChat property.
    * 
    * POSSIBLY NEED TO ADD LISTENER EVENTS HERE 
    * 
-   * @param player Player to remove from conversation area
+   * @param player Player to remove from chat
    * @param chat Chat to remove player from
    */
    removePlayerFromChat(player: Player, chat: Chat) : void {
@@ -283,6 +286,7 @@ export default class CoveyTownController {
       // if its active chat is not defined, set it to the new chat 
       playersAroundAnchorPlayer.forEach(player => player.activeChat = newChat);
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
+      this._chats.push(newChat);
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
