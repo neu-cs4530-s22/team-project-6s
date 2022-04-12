@@ -5,6 +5,7 @@ import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import Chat from '../types/Chat';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -31,6 +32,8 @@ export interface TownJoinResponse {
   providerVideoToken: string;
   /** List of players currently in this town * */
   currentPlayers: Player[];
+  /** List of chats currently in this town * */
+  currentChats: Chat[];
   /** Friendly name of this town * */
   friendlyName: string;
   /** Is this a private town? * */
@@ -119,6 +122,7 @@ export async function townJoinHandler(requestData: TownJoinRequest): Promise<Res
       coveySessionToken: newSession.sessionToken,
       providerVideoToken: newSession.videoToken,
       currentPlayers: coveyTownController.players,
+      currentChats: coveyTownController.chats,
       friendlyName: coveyTownController.friendlyName,
       isPubliclyListed: coveyTownController.isPubliclyListed,
       conversationAreas: coveyTownController.conversationAreas,

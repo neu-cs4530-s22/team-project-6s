@@ -1,5 +1,8 @@
 import React from 'react';
 import { Box, Stack } from '@chakra-ui/react';
+import useCoveyAppState from '../../hooks/useCoveyAppState';
+import usePlayersInTown from '../../hooks/usePlayersInTown';
+import useChatsInTown from '../../hooks/useChatsInTown';
 
 function myMessage(): JSX.Element {
     return (
@@ -28,6 +31,8 @@ function playerMessage(): JSX.Element {
 }
 
 export default function ChatConversation(): JSX.Element {
+    const currentChats = useChatsInTown();
+    console.log(currentChats);
     return (
       <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
           <Stack>
