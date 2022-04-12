@@ -29,7 +29,7 @@ function playerMessage(): JSX.Element {
 
 export default function ChatConversation(): JSX.Element {
     return (
-      <div style={{overflow: "scroll", flex: "auto"}}>
+      <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
           <Stack>
               {myMessage()}
               {playerMessage()}

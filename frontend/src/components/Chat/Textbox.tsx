@@ -8,8 +8,8 @@ export default function Textbox(): JSX.Element {
 
     return (
       <>
-      <Input placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}}/>
-      <Button style={{alignSelf: 'flex-end'}} size='lg'><ChatIcon /></Button>
+      <Input data-testid="message-box" placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}}/>
+      <Button data-testid="send-button" style={{alignSelf: 'flex-end'}} size='lg'><ChatIcon /></Button>
       </>
     );
   }
