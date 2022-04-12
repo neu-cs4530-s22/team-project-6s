@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
 import { ServerConversationArea } from './ConversationArea';
+import { ServerChat } from './Chat';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -28,6 +29,8 @@ export interface TownJoinResponse {
   providerVideoToken: string;
   /** List of players currently in this town * */
   currentPlayers: ServerPlayer[];
+  /** List of chats currently in this town * */
+  currentChats: ServerChat[];
   /** Friendly name of this town * */
   friendlyName: string;
   /** Is this a private town? * */

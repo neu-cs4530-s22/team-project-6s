@@ -15,6 +15,7 @@ import { io, Socket } from 'socket.io-client';
 import './App.css';
 import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import Chat, { ServerChat, ChatLocation } from './classes/Chat';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import Login from './components/Login/Login';
@@ -33,6 +34,7 @@ import CoveyAppContext from './contexts/CoveyAppContext';
 import NearbyPlayersContext from './contexts/NearbyPlayersContext';
 import PlayerMovementContext, { PlayerMovementCallback } from './contexts/PlayerMovementContext';
 import PlayersInTownContext from './contexts/PlayersInTownContext';
+import ChatsInTownContext from './contexts/ChatsInTownContext';
 import VideoContext from './contexts/VideoContext';
 import { CoveyAppState } from './CoveyTypes';
 
@@ -130,6 +132,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
   const [nearbyPlayers, setNearbyPlayers] = useState<Player[]>([]);
   // const [currentLocation, setCurrentLocation] = useState<UserLocation>({moving: false, rotation: 'front', x: 0, y: 0});
   const [conversationAreas, setConversationAreas] = useState<ConversationArea[]>([]);
+  const [chatsInTown, setChatsInTown] = useState<Chat[]>([]);
 
   const setupGameController = useCallback(
     async (initData: TownJoinResponse) => {
@@ -158,6 +161,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       setPlayersInTown(localPlayers);
       setConversationAreas(localConversationAreas);
       setNearbyPlayers(localNearbyPlayers);
+
+      // assign chats in town
+      const localChats = initData.currentChats.map(sc => Chat.fromServerChat(sc));
+      setChatsInTown(localChats);
 
       const recalculateNearbyPlayers = () => {
         const newNearbyPlayers = calculateNearbyPlayers(localPlayers, currentLocation);
@@ -256,6 +263,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       dispatchAppUpdate,
       playerMovementCallbacks,
       setPlayersInTown,
+      setChatsInTown,
       setNearbyPlayers,
       setConversationAreas,
     ],
@@ -294,7 +302,9 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
             <PlayersInTownContext.Provider value={playersInTown}>
               <NearbyPlayersContext.Provider value={nearbyPlayers}>
                 <ConversationAreasContext.Provider value={conversationAreas}>
+                  <ChatsInTownContext.Provider value={chatsInTown}>
                   {page}
+                  </ChatsInTownContext.Provider>
                 </ConversationAreasContext.Provider>
               </NearbyPlayersContext.Provider>
             </PlayersInTownContext.Provider>
