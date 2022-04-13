@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/react';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useChatsInTown from '../../hooks/useChatsInTown';
+import { ChatListener, ChatMessage } from '../../classes/Chat';
 
 type MessageProps = {
     message: string
@@ -37,13 +38,32 @@ export default function ChatConversation(): JSX.Element {
     const {myPlayerID} = useCoveyAppState();
     const players = usePlayersInTown();
     const myPlayer = players.find((player) => player.id === myPlayerID);
-    const chats = useChatsInTown();
-    const myChat = chats.find((chat) => chat._id === myPlayer?._activeChatID);
+    const initChats = useChatsInTown();
+    const initChat = initChats.find((chat) => chat._id === myPlayer?._activeChatID);
+    const [chat, setChat] = useState(initChat);
+    const [messages, setMessages] = useState(initChat?.messages);
+
+     useEffect(() => {
+         // every time chat changes, update the messages
+        function handleMessagesChange(newMessages: ChatMessage[]) {
+            setMessages(newMessages);
+        }
+        
+        const listener : ChatListener = {onMessagesChange: (newMessages: ChatMessage[]) => {
+            handleMessagesChange(newMessages);
+        }}
+        chat?.addListener(listener);
+        // remove listener on unmount
+        return function cleanup() {
+            chat?.removeListener(listener)
+        };
+      }, [chat]);
 
     return (
       <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
+          {console.log(useChatsInTown())}
           <Stack>
-          {myChat ? myChat.messages.map((message) => 
+          {chat && messages ? messages.map((message) => 
           /* {if (message.author) {
               <SentMessage message={message.body} />;
           } else {
