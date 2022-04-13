@@ -6,17 +6,17 @@ export default class Player {
 
   private readonly _userName: string;
 
-  public inChat: boolean;
+  public _activeChatID?: string;
 
   public sprite?: Phaser.GameObjects.Sprite;
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation, inChat: boolean) {
+  constructor(id: string, userName: string, location: UserLocation, activeChatID: string) {
     this._id = id;
     this._userName = userName;
     this.location = location;
-    this.inChat = inChat;
+    this._activeChatID = activeChatID;
   }
 
   get userName(): string {
@@ -28,11 +28,11 @@ export default class Player {
   }
 
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {
-    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location, playerFromServer.inChat);
+    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location, playerFromServer._activeChatID);
   }
 }
 
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, inChat: boolean };
+export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _activeChatID: string };
 
 export type Direction = 'front'|'back'|'left'|'right';
 

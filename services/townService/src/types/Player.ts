@@ -20,7 +20,7 @@ export default class Player {
   private _activeConversationArea?: ServerConversationArea;
 
   /** The current Chat that the player is in, or undefined if they are not located within one */
-  private _activeChat?: Chat;
+  private _activeChatID?: string;
 
   constructor(userName: string) {
     this.location = {
@@ -49,12 +49,12 @@ export default class Player {
     this._activeConversationArea = conversationArea;
   }
 
-  get activeChat(): Chat | undefined {
-    return this._activeChat;
+  get activeChatID(): string | undefined {
+    return this._activeChatID;
   }
 
-  set activeChat(chat: Chat | undefined) {
-    this._activeChat = chat;
+  set activeChatID(chat: string | undefined) {
+    this._activeChatID = chat;
   }
 
   /**

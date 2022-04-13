@@ -218,6 +218,13 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         setPlayersInTown(localPlayers);
         recalculateNearbyPlayers();
       });
+      socket.on('playerActiveChatUpdated', (player: ServerPlayer) => {
+        const localPlayer = localPlayers.find(p => p.id === player._id);
+        if (localPlayer){
+          console.log(player._activeChatID)
+          localPlayer._activeChatID = player._activeChatID;
+        }
+      });
       socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
         const updatedConversationArea = localConversationAreas.find(
           c => c.label === _conversationArea.label,

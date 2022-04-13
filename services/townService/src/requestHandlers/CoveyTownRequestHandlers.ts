@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, ChatMessageUpdateRequest } from '../client/TownsServiceClient';
 import Chat from '../types/Chat';
 
 /**
@@ -202,6 +202,26 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
   };
 }
 
+
+export function chatUpdateHandler(_requestData: ChatMessageUpdateRequest): ResponseEnvelope<Record<string, null>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: `Unable to send chat ${_requestData.body}`,
+    };
+  }
+  const success = townController.updateChatMessageListFromUserInput(_requestData.chatID,_requestData.sendingPlayerID,
+    _requestData.body,_requestData.dateCreated,_requestData.privateMessage,_requestData.privateMessageRecipientId);
+
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? `Unable to send chat ${_requestData.body}` : undefined,
+  };
+
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -232,6 +252,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onChatMessage(message: ChatMessage){
       socket.emit('chatMessage', message);
     },
+    onPlayerActiveChatUpdated(player: Player){
+      socket.emit('playerActiveChatUpdated',player)
+    }
   };
 }
 

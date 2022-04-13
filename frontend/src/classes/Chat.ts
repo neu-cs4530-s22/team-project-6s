@@ -1,12 +1,11 @@
 import { nanoid } from 'nanoid';
-import Player from "./Player";
 
 export const CHAT_RADIUS = 80;
 
 export default class Chat {
     public location: ChatLocation;
   
-    private readonly _id: string;
+    public readonly _id: string;
   
     public occupantsByID: string[]
   
