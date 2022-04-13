@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { ChatLocation, ChatMessage } from '../CoveyTypes';
 import Player from './Player';
 
-export const CHAT_RADIUS = 150;
+export const CHAT_RADIUS = 80;
 
 /**
  * Each chat that connected to a town is represented by a Chat object
