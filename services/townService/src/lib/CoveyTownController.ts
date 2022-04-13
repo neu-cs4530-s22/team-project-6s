@@ -176,6 +176,7 @@ export default class CoveyTownController {
             player.activeChatID = this.chats[i]._id;
             this.chats[i].occupantsByID.push(player.id);
             this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player));
+            this._listeners.forEach(listener => listener.onChatUpdated(this.chats[i]));
           }
           break;
         }
@@ -293,8 +294,7 @@ export default class CoveyTownController {
       this._chats.push(newChat);
 
       this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(_anchorPlayer));
-
-      console.log('chat created');
+      this._listeners.forEach(listener => listener.onChatUpdated(newChat));
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
@@ -310,7 +310,7 @@ export default class CoveyTownController {
    * @param privateMessage if the chat was a private message
    * @param privateMessageRecipientId who the private message was sent to 
    */
-  createChatMessageFromUserInput(chat: Chat, sendingPlayer: Player, body: string, dateCreated: Date, 
+  /* createChatMessageFromUserInput(chat: Chat, sendingPlayer: Player, body: string, dateCreated: Date, 
     privateMessage: Boolean, privateMessageRecipientId: string|undefined ): void {
       const message = {author :  sendingPlayer.id,
         sid: nanoid(),
@@ -320,7 +320,7 @@ export default class CoveyTownController {
         privateMessageRecipientId: privateMessageRecipientId }
 
         chat.addChatMessage(message);
-  }
+  } */
 
   /**
    * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat

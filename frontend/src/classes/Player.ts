@@ -12,7 +12,7 @@ export default class Player {
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation, activeChatID: string) {
+  constructor(id: string, userName: string, location: UserLocation, activeChatID: string | undefined) {
     this._id = id;
     this._userName = userName;
     this.location = location;
@@ -25,6 +25,10 @@ export default class Player {
 
   get id(): string {
     return this._id;
+  }
+
+  get activeChatID(): string | undefined {
+    return this._activeChatID;
   }
 
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {

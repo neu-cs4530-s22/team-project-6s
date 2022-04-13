@@ -8,6 +8,8 @@ export default class Chat {
     public readonly _id: string;
   
     public occupantsByID: string[]
+
+    // public messages: string[]
   
     constructor(id: string, occupantsByID: string[], location: ChatLocation) {
         this._id = id;

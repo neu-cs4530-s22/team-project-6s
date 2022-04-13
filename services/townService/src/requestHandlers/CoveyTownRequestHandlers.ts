@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea, ChatMessageUpdateRequest } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, ChatMessageUpdateRequest, ServerChat } from '../client/TownsServiceClient';
 import Chat from '../types/Chat';
 
 /**
@@ -249,11 +249,14 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onConversationAreaUpdated(conversation: ServerConversationArea){
       socket.emit('conversationUpdated', conversation);
     },
+    onChatUpdated(chat: Chat){
+      socket.emit('chatUpdated', chat);
+    },
     onChatMessage(message: ChatMessage){
       socket.emit('chatMessage', message);
     },
     onPlayerActiveChatUpdated(player: Player){
-      socket.emit('playerActiveChatUpdated',player)
+      socket.emit('playerActiveChatUpdated', player)
     }
   };
 }
