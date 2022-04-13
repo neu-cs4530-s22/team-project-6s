@@ -164,22 +164,24 @@ export default class CoveyTownController {
 
     // see if player is within chatting distance of another
     if (!player.activeConversationArea) {
+      const activeChat = this.chats.find((c) => c._id === player.activeChatID)
       // check if player has moved outside of chat 
-      if (player.activeChat && !player.isWithinChat(player.activeChat)){
-        this.removePlayerFromChat(player, player.activeChat);
+      if (activeChat && !player.isWithinChat(activeChat)){
+        this.removePlayerFromChat(player, activeChat);
       }
       // check if player's new location is within an existing chat & add them
       for (let i=0; i < this.chats.length; i++) {
         if (player.isWithinChat(this.chats[i])) {
-          if (player.activeChat !== this.chats[i]) {
-            player.activeChat = this.chats[i];
+          if (activeChat !== this.chats[i]) {
+            player.activeChatID = this.chats[i]._id;
             this.chats[i].occupantsByID.push(player.id);
+            this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player));
           }
           break;
         }
       }
 
-      if(!player.activeChat){
+      if(!player.activeChatID){
         this.addChat(player);
       }
     }
@@ -223,9 +225,10 @@ export default class CoveyTownController {
     // destroy chat if there is only one player left in it
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
-      this._players.map(p => { if (p.activeChat ===chat){p.activeChat = undefined}});
+      this._players.map(p => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
     } 
-    player.activeChat = undefined;
+    player.activeChatID = undefined;
+    this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player));
   }
 
   /**
@@ -276,7 +279,7 @@ export default class CoveyTownController {
    addChat(_anchorPlayer: Player): boolean {
     // make sure they're not already in a chat convo
     let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer) && player !== _anchorPlayer);
-    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChat === undefined)
+    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined)
 
     if (playersAroundAnchorPlayer.length === 0) {
       return false
@@ -284,9 +287,14 @@ export default class CoveyTownController {
     else {
       const newChat :Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
-      playersAroundAnchorPlayer.forEach(player => player.activeChat = newChat);
+      playersAroundAnchorPlayer.forEach(player => player.activeChatID = newChat._id);
+      playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)))
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
       this._chats.push(newChat);
+
+      this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(_anchorPlayer));
+
+      console.log('chat created');
     }
     // POSSIBLE LISTENER NEEDED HERE LATER
     return true;
@@ -312,6 +320,36 @@ export default class CoveyTownController {
         privateMessageRecipientId: privateMessageRecipientId }
 
         chat.addChatMessage(message);
+  }
+
+  /**
+   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
+   * 
+   * @param chat the chat that recieved a new message 
+   * @param sendingPlayer the player who sent the chat
+   * @param body the content of the chat
+   * @param dateCreated when the chat was sent 
+   * @param privateMessage if the chat was a private message
+   * @param privateMessageRecipientId who the private message was sent to 
+   */
+   updateChatMessageListFromUserInput(chatID: String, sendingPlayerID: string, body: string, dateCreated: Date, 
+    privateMessage: Boolean, privateMessageRecipientId: string|undefined ): boolean {
+
+      const chat = this._chats.find((chat) => chat._id == chatID); 
+
+      if (!chat) {
+        return false;
+      }
+      const message = {author :  sendingPlayerID,
+        sid: nanoid(),
+        body: body,
+        dateCreated: dateCreated,
+        privateMessage: privateMessage,
+        privateMessageRecipientId: privateMessageRecipientId }
+
+        chat.addChatMessage(message);
+
+      return true;
   }
 
   /**

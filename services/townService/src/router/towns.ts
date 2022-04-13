@@ -9,6 +9,7 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  chatUpdateHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -96,6 +97,32 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,
         coveyTownPassword: req.body.coveyTownPassword,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Update a chat with a new message 
+   */
+   app.patch('/towns/:townID/chats', express.json(), async (req, res) => {
+    try {
+      const result = chatUpdateHandler({
+        coveyTownID: req.params.townID,
+        chatID: req.body.chatID,
+        sessionToken: req.body.sessionToken,
+        sendingPlayerID: req.body.sendingPlayerID,
+        body: req.body.body,
+        dateCreated: req.body.dateCreated,
+        privateMessage: req.body.privateMessage,
+        privateMessageRecipientId: req.body.privateMessageRecipientId,
       });
       res.status(StatusCodes.OK)
         .json(result);

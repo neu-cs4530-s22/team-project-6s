@@ -1,9 +1,10 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { UserLocation } from '../CoveyTypes';
+import Chat from '../types/Chat';
 
 
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _activeChatID: string };
 
 /**
  * A bounding box, with a coordinate system that matches the frontend game engine's coordinates
@@ -96,6 +97,21 @@ export interface TownUpdateRequest {
   coveyTownPassword: string;
   friendlyName?: string;
   isPubliclyListed?: boolean;
+}
+
+
+/**
+ * Payload sent by the client to update a chat with a new message.
+ */
+ export interface ChatMessageUpdateRequest {
+  coveyTownID: string;
+  chatID: string;
+  sessionToken: string;
+  sendingPlayerID: string;
+  body: string;
+  dateCreated: Date;
+  privateMessage: boolean;
+  privateMessageRecipientId?: string;
 }
 
 /**
