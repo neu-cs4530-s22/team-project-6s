@@ -2,6 +2,7 @@ import React from 'react';
 import { Heading, StackDivider, VStack, Tooltip } from '@chakra-ui/react';
 import ChatConversation from './ChatConversation';
 import Textbox from './Textbox';
+import SenderDropdown from './SenderDropdown';
 
 export default function ChatWindow(): JSX.Element {
     return (
@@ -19,6 +20,7 @@ export default function ChatWindow(): JSX.Element {
             <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
           </Heading>
         <ChatConversation />
+        <SenderDropdown />
         <Textbox />
       </VStack>
     );
