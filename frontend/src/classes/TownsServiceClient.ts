@@ -88,6 +88,21 @@ export interface ConversationCreateRequest {
   conversationArea: ServerConversationArea;
 }
 
+
+/**
+ * Payload sent by the client to update a chat.
+ */
+ export interface ChatUpdateRequest {
+  coveyTownID: string;
+  chatID?: string;
+  sessionToken: string;
+  sendingPlayerID: string;
+  body: string;
+  dateCreated: Date;
+  privateMessage: boolean;
+  privateMessageRecipientId?: string;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -156,6 +171,11 @@ export default class TownsServiceClient {
   
   async createConversation(requestData: ConversationCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async updateChat(requestData: ChatUpdateRequest): Promise<void> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/chats`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

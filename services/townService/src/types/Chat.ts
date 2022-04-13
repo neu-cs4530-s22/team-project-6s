@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { ChatLocation, ChatMessage } from '../CoveyTypes';
 import Player from './Player';
 
-export const CHAT_RADIUS = 150;
+export const CHAT_RADIUS = 80;
 
 /**
  * Each chat that connected to a town is represented by a Chat object
@@ -12,7 +12,7 @@ export const CHAT_RADIUS = 150;
     public location: ChatLocation;
   
     /** The unique identifier for this chat * */
-    private readonly _id: string;
+    public readonly _id: string;
 
     public occupantsByID: string[];
 
@@ -26,7 +26,7 @@ export const CHAT_RADIUS = 150;
       };
       this._id = nanoid();
       this.occupantsByID = [anchorPlayer.id];
-      anchorPlayer.activeChat = this;
+      anchorPlayer.activeChatID = this._id;
       this.chatMessages = [];
     }
 
@@ -36,7 +36,7 @@ export const CHAT_RADIUS = 150;
      * @param message new message 
      */
     addChatMessage(message: ChatMessage): void {
-        this.chatMessages.push(message);
+      this.chatMessages.push(message);
     }
 
 

@@ -163,7 +163,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       setNearbyPlayers(localNearbyPlayers);
 
       // assign chats in town
-      const localChats = initData.currentChats.map(sc => Chat.fromServerChat(sc));
+      let localChats = initData.currentChats.map(sc => Chat.fromServerChat(sc));
       setChatsInTown(localChats);
 
       const recalculateNearbyPlayers = () => {
@@ -217,6 +217,18 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         localPlayers = localPlayers.filter(player => player.id !== disconnectedPlayer._id);
         setPlayersInTown(localPlayers);
         recalculateNearbyPlayers();
+      });
+      socket.on('playerActiveChatUpdated', (player: ServerPlayer) => {
+        const localPlayer = localPlayers.find(p => p.id === player._id);
+        if (localPlayer){
+          localPlayer._activeChatID = player._activeChatID;
+        }
+      });
+      socket.on('chatUpdated', (chat: Chat) => {
+        if (chat) {
+          localChats = localChats.concat(chat);
+          setChatsInTown(localChats);
+        }
       });
       socket.on('conversationUpdated', (_conversationArea: ServerConversationArea) => {
         const updatedConversationArea = localConversationAreas.find(

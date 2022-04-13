@@ -13,7 +13,7 @@ export type ChatMessage = {
   sid: string;
   body: string;
   dateCreated: Date;
-  privateMessage: Boolean;
+  privateMessage: boolean;
   privateMessageRecipientId: string|undefined;
 };
 
