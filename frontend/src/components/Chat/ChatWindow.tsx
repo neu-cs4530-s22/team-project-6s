@@ -19,8 +19,8 @@ export default function ChatWindow(): JSX.Element {
             Chat with others!
             <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
           </Heading>
+          <SenderDropdown />
         <ChatConversation />
-        <SenderDropdown />
         <Textbox />
       </VStack>
     );
