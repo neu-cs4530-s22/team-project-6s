@@ -15,7 +15,7 @@ import { io, Socket } from 'socket.io-client';
 import './App.css';
 import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
-import Chat, { ServerChat, ChatLocation } from './classes/Chat';
+import Chat, { ServerChat, ChatLocation, ChatMessage } from './classes/Chat';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import Login from './components/Login/Login';
@@ -225,7 +225,25 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         }
       });
       socket.on('chatUpdated', (chat: Chat) => {
+        // if chat is updated replace the entry, if newly created add it
+        if (localChats.find((c) => c === chat)) {
+          localChats = localChats.filter((c) => c === chat);
+          localChats = localChats.concat(chat);
+          setChatsInTown(localChats);
+        } else {
+          localChats = localChats.concat(chat);
+          setChatsInTown(localChats);
+        }
+      });
+      socket.on('chatMessage', (chatMessage: ChatMessage) => {
+        // find the chat that corresponds to this chat message
+        const chat = localChats.find((c) => c._id === chatMessage.sid)
         if (chat) {
+          if (!chat.messages) {
+            chat.messages = [];
+          }
+          chat.messages.push(chatMessage);
+          localChats = localChats.filter((c) => c === chat);
           localChats = localChats.concat(chat);
           setChatsInTown(localChats);
         }

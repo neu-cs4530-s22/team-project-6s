@@ -1,34 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Stack } from '@chakra-ui/react';
+import { nanoid } from 'nanoid';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useChatsInTown from '../../hooks/useChatsInTown';
-import { ChatListener, ChatMessage } from '../../classes/Chat';
+import { ChatMessage } from '../../classes/Chat';
 
-type MessageProps = {
-    message: string
+type SentMessageProps = {
+    message: ChatMessage
 }
-function SentMessage({message}: MessageProps): JSX.Element {
+function SentMessage({message}: SentMessageProps): JSX.Element {
+    const date = message.dateCreated;
     return (
         <Box textAlign="right">
             <Box>
-                <p>Me &emsp; <i>12:39PM</i></p>
+                <p>Me &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
             <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{overflow: "auto"}}>
-                {message}
+                {message.body}
             </Box>
         </Box>
     );
 }
 
-function ReceivedMessage({message}: MessageProps): JSX.Element {
+type ReceivedMessageProps = {
+    message: ChatMessage,
+    playerUserName: string | undefined
+}
+function ReceivedMessage({message, playerUserName}: ReceivedMessageProps): JSX.Element {
+    const date = message.dateCreated;
     return (
         <Box textAlign="left">
             <Box>
-                <p>Sender &emsp; <i>12:39PM</i></p>
+                <p>{playerUserName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
             <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{overflow: "auto"}}>
-                {message}
+                {message.body}
             </Box>
         </Box>
     );
@@ -38,37 +45,15 @@ export default function ChatConversation(): JSX.Element {
     const {myPlayerID} = useCoveyAppState();
     const players = usePlayersInTown();
     const myPlayer = players.find((player) => player.id === myPlayerID);
-    const initChats = useChatsInTown();
-    const initChat = initChats.find((chat) => chat._id === myPlayer?._activeChatID);
-    const [chat, setChat] = useState(initChat);
-    const [messages, setMessages] = useState(initChat?.messages);
-
-     useEffect(() => {
-         // every time chat changes, update the messages
-        function handleMessagesChange(newMessages: ChatMessage[]) {
-            setMessages(newMessages);
-        }
-        
-        const listener : ChatListener = {onMessagesChange: (newMessages: ChatMessage[]) => {
-            handleMessagesChange(newMessages);
-        }}
-        chat?.addListener(listener);
-        // remove listener on unmount
-        return function cleanup() {
-            chat?.removeListener(listener)
-        };
-      }, [chat]);
+    const chats = useChatsInTown();
+    const chat = chats.find((c) => c._id === myPlayer?._activeChatID);
 
     return (
       <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
-          {console.log(useChatsInTown())}
           <Stack>
-          {chat && messages ? messages.map((message) => 
-          /* {if (message.author) {
-              <SentMessage message={message.body} />;
-          } else {
-              <ReceivedMessage message={message.body} />;
-          }}) */ <SentMessage key={message.sid} message={message.body} />) : <></>}
+          {chat && chat.messages ? chat.messages.map((message) => 
+          message.author === myPlayer?.id ? <SentMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message}/> 
+          : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} playerUserName={myPlayer?.userName}/>) : <></>}
           </Stack>
       </div>
     );
