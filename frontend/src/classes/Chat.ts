@@ -14,7 +14,7 @@ export default class Chat {
   
     public occupantsByID: string[];
 
-    public readonly messages: ChatMessage[];
+    public messages: ChatMessage[];
 
     private _listeners: ChatListener[] = [];
   
@@ -24,7 +24,7 @@ export default class Chat {
         this.location = location;
         this.messages = messages;
     }
-  
+
     static fromServerChat(chatFromServer: ServerChat): Chat {
       return new Chat(chatFromServer._id, chatFromServer._occupantsByID, chatFromServer.location, chatFromServer.messages);
     }

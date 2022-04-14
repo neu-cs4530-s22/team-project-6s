@@ -1,4 +1,5 @@
 import React from 'react';
+import { nanoid } from 'nanoid';
 import { ChatMessage } from '../../../../../../classes/TextConversation';
 import MessageInfo from './MessageInfo/MessageInfo';
 import MessageListScrollContainer from './MessageListScrollContainer/MessageListScrollContainer';
@@ -33,7 +34,7 @@ export default function MessageList({ messages }: MessageListProps) {
         const profile = players.find(p => p.id == message.author);
 
         return (
-          <React.Fragment key={message.sid}>
+          <React.Fragment key={`${nanoid()} ${message.sid}`}>
             {shouldDisplayMessageInfo && (
               <MessageInfo author={profile?.userName || message.author} isLocalParticipant={isLocalParticipant} dateCreated={time} />
             )}

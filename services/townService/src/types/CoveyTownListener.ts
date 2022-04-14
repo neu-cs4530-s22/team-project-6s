@@ -38,7 +38,7 @@ export default interface CoveyTownListener {
 
   /**
    * Called when a chat is created or updated
-   * @param chat the conversation area that is updated or created
+   * @param chat the chat that is updated or created
    */
    onChatUpdated(chat: Chat) : void;
   
