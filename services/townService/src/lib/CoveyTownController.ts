@@ -215,8 +215,6 @@ export default class CoveyTownController {
    * 
    * Updates the player's activeChat property.
    * 
-   * POSSIBLY NEED TO ADD LISTENER EVENTS HERE 
-   * 
    * @param player Player to remove from chat
    * @param chat Chat to remove player from
    */
@@ -341,13 +339,14 @@ export default class CoveyTownController {
         return false;
       }
       const message = {author :  sendingPlayerID,
-        sid: nanoid(),
+        sid: chat._id,
         body: body,
         dateCreated: dateCreated,
         privateMessage: privateMessage,
         privateMessageRecipientId: privateMessageRecipientId }
 
         chat.addChatMessage(message);
+        this._listeners.forEach(listener => listener.onChatMessage(message));
 
       return true;
   }
