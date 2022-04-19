@@ -1,5 +1,4 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { forEach } from 'ramda';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import Chat from '../types/Chat';
