@@ -53,8 +53,8 @@ export default function ChatConversation(): JSX.Element {
     return (
       <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
           <Stack>
-          {console.log(chat)}
-          {chat && chat.messages ? chat.messages.map((message) => 
+              {console.log(chat)}
+          {chat && chat.chatMessages ? chat.chatMessages.map((message) => 
           message.author === myPlayer?.id ? <SentMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message}/> 
           : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} author={message.author}/>) : <></>}
           </Stack>
