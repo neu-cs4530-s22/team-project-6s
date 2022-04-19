@@ -266,6 +266,17 @@
                  "width":164.667,
                  "x":3482.99983333333,
                  "y":1058.66666666667
+                },
+              {
+                 "height":80,
+                 "id":32,
+                 "name":"Chat Area",
+                 "rotation":0,
+                 "type":"chat",
+                 "visible":true,
+                 "width":80,
+                 "x":1598.99983333333,
+                 "y":1104.00016666667
                 }],
          "opacity":1,
          "type":"objectgroup",

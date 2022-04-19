@@ -252,6 +252,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onChatUpdated(chat: Chat){
       socket.emit('chatUpdated', chat);
     },
+    onChatDestroyed(chat: Chat){
+      socket.emit('chatDestroyed', chat);
+    },
     onChatMessage(message: ChatMessage){
       socket.emit('chatMessage', message);
     },

@@ -235,6 +235,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           setChatsInTown(localChats);
         }
       });
+      socket.on('chatDestroyed', (chat: Chat) => {
+        localChats = localChats.filter((c) => c === chat);
+        setChatsInTown(localChats);
+      });
       socket.on('chatMessage', (chatMessage: ChatMessage) => {
         // find the chat that corresponds to this chat message
         const chat = localChats.find((c) => c._id === chatMessage.sid)
