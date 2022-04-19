@@ -225,6 +225,7 @@ export default class CoveyTownController {
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
       this._players.map(p => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
+      this._listeners.forEach(listener => listener.onChatDestroyed(chat));
     } 
     player.activeChatID = undefined;
     this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player));
@@ -347,6 +348,7 @@ export default class CoveyTownController {
 
         chat.addChatMessage(message);
         this._listeners.forEach(listener => listener.onChatMessage(message));
+        this._listeners.forEach(listener => listener.onChatUpdated(chat));
 
       return true;
   }

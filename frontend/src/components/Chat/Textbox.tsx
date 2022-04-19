@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, useToast } from '@chakra-ui/react';
 import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
-import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 
 export default function Textbox(): JSX.Element {
     const [message, setMessage] = useState('');
@@ -25,6 +25,7 @@ export default function Textbox(): JSX.Element {
           privateMessage ,
           privateMessageRecipientId,
         });
+        setMessage('');
         toast({
           title: 'Message sent!',
           status: 'success',
@@ -35,7 +36,6 @@ export default function Textbox(): JSX.Element {
           description: err.toString(),
           status: 'error',
         });
-        console.log(`hello ${myPlayer?._activeChatID}`);
       }
     }
 
@@ -57,7 +57,7 @@ export default function Textbox(): JSX.Element {
       <>
       <div>
         <div style={{float: 'left'}}>
-          <Input data-testid="message-box" isDisabled={!myPlayer?._activeChatID} placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}}/>
+          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) }}}/>
         </div>
         <div style={{overflow: 'hidden'}}><Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined) }}><ChatIcon /></Button></div>
       </div>
