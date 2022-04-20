@@ -38,7 +38,7 @@ export default function Textbox(): JSX.Element {
         console.log(`hello ${myPlayer?._activeChatID}`);
       }
     }
-
+  
     const nearbyPlayers = useNearbyPlayers();
 
     function checkIfInChat() {
@@ -49,6 +49,8 @@ export default function Textbox(): JSX.Element {
       }
     }
 
+    
+
     useEffect(() => {
       checkIfInChat();
     }, [nearbyPlayers]);
@@ -57,7 +59,7 @@ export default function Textbox(): JSX.Element {
       <>
       <div>
         <div style={{float: 'left'}}>
-          <Input data-testid="message-box" isDisabled={!myPlayer?._activeChatID} placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}}/>
+          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}}/>
         </div>
         <div style={{overflow: 'hidden'}}><Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined) }}><ChatIcon /></Button></div>
       </div>

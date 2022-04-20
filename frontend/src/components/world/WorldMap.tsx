@@ -439,7 +439,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     const cursorKeys = this.input.keyboard.createCursorKeys();
     this.cursors.push(cursorKeys);
-    this.cursors.push(
+    /* this.cursors.push(
       this.input.keyboard.addKeys(
         {
           up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -460,7 +460,7 @@ class CoveyGameScene extends Phaser.Scene {
         },
         false,
       ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
+    ); */
 
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the

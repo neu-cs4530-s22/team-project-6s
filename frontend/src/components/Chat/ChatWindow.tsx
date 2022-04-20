@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heading, StackDivider, VStack, Tooltip } from '@chakra-ui/react';
 import ChatConversation from './ChatConversation';
 import Textbox from './Textbox';
 import SenderDropdown from './SenderDropdown';
+
+
 
 export default function ChatWindow(): JSX.Element {
     return (
