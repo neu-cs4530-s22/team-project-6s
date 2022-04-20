@@ -41,6 +41,12 @@ export default interface CoveyTownListener {
    * @param chat the chat that is updated or created
    */
    onChatUpdated(chat: Chat) : void;
+
+   /**
+   * Called when a chat is destroyed
+   * @param chat the chat that is destroyed
+   */
+  onChatDestroyed(chat: Chat) : void;
   
   /**
    * Called when a conversation area is created or updated

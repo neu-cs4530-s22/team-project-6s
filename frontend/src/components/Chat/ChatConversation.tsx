@@ -25,14 +25,16 @@ function SentMessage({message}: SentMessageProps): JSX.Element {
 
 type ReceivedMessageProps = {
     message: ChatMessage,
-    playerUserName: string | undefined
+    author: string | undefined
 }
-function ReceivedMessage({message, playerUserName}: ReceivedMessageProps): JSX.Element {
+function ReceivedMessage({message, author}: ReceivedMessageProps): JSX.Element {
+    const players = usePlayersInTown();
+    const authorPlayer = players.find((player) => player.id === author);
     const date = message.dateCreated;
     return (
         <Box textAlign="left">
             <Box>
-                <p>{playerUserName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
+                <p>{authorPlayer?.userName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
             <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{overflow: "auto"}}>
                 {message.body}
@@ -51,9 +53,10 @@ export default function ChatConversation(): JSX.Element {
     return (
       <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
           <Stack>
-          {chat && chat.messages ? chat.messages.map((message) => 
+              {console.log(chat)}
+          {chat && chat.chatMessages ? chat.chatMessages.map((message) => 
           message.author === myPlayer?.id ? <SentMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message}/> 
-          : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} playerUserName={myPlayer?.userName}/>) : <></>}
+          : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} author={message.author}/>) : <></>}
           </Stack>
       </div>
     );

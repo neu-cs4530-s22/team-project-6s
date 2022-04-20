@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import React, { useEffect, useMemo, useState } from 'react';
 import BoundingBox from '../../classes/BoundingBox';
+import Chat from '../../classes/Chat';
 import ConversationArea from '../../classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
@@ -25,6 +26,11 @@ type ConversationGameObjects = {
   conversationArea?: ConversationArea;
 };
 
+type ChatGameObjects = {
+  sprite: Phaser.GameObjects.Ellipse;
+  chat?: Chat;
+};
+
 class CoveyGameScene extends Phaser.Scene {
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -36,6 +42,8 @@ class CoveyGameScene extends Phaser.Scene {
   private players: Player[] = [];
 
   private conversationAreas: ConversationGameObjects[] = [];
+
+  private chatAreas: ChatGameObjects[] = [];
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
@@ -380,6 +388,33 @@ class CoveyGameScene extends Phaser.Scene {
       // the map
     });
 
+/*     const chatAreaObjects = map.filterObjects(
+      'Objects',
+      obj => obj.type === 'chat',
+    );
+    const chatSprites = map.createFromObjects(
+      'Objects',
+      chatAreaObjects.map(obj => ({ id: obj.id })),
+    );
+    this.physics.world.enable(chatSprites);
+    chatSprites.forEach(chat => {
+      const sprite = chat as Phaser.GameObjects.Ellipse;
+      sprite.y += sprite.displayHeight;
+      const labelText = this.add.text(
+        sprite.x - sprite.displayWidth / 2,
+        sprite.y - sprite.displayHeight / 2,
+        conversation.name,
+        { color: '#FFFFFF', backgroundColor: '#000000' },
+      );
+      sprite.setTintFill();
+      sprite.fillColor();
+      sprite.setAlpha(0.3);
+
+      this.chatAreas.push({
+        sprite,
+      });
+    }); */
+
     const conversationAreaObjects = map.filterObjects(
       'Objects',
       obj => obj.type === 'conversation',
@@ -439,28 +474,6 @@ class CoveyGameScene extends Phaser.Scene {
 
     const cursorKeys = this.input.keyboard.createCursorKeys();
     this.cursors.push(cursorKeys);
-    /* this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          up: Phaser.Input.Keyboard.KeyCodes.W,
-          down: Phaser.Input.Keyboard.KeyCodes.S,
-          left: Phaser.Input.Keyboard.KeyCodes.A,
-          right: Phaser.Input.Keyboard.KeyCodes.D,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    );
-    this.cursors.push(
-      this.input.keyboard.addKeys(
-        {
-          up: Phaser.Input.Keyboard.KeyCodes.H,
-          down: Phaser.Input.Keyboard.KeyCodes.J,
-          left: Phaser.Input.Keyboard.KeyCodes.K,
-          right: Phaser.Input.Keyboard.KeyCodes.L,
-        },
-        false,
-      ) as Phaser.Types.Input.Keyboard.CursorKeys,
-    ); */
 
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
     // has a bit of whitespace, so I'm using setSize & setOffset to control the size of the
