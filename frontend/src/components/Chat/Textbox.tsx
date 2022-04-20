@@ -38,7 +38,7 @@ export default function Textbox(): JSX.Element {
         });
       }
     }
-
+  
     const nearbyPlayers = useNearbyPlayers();
 
     function checkIfInChat() {
@@ -48,6 +48,8 @@ export default function Textbox(): JSX.Element {
         setInChat(false)
       }
     }
+
+    
 
     useEffect(() => {
       checkIfInChat();

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heading, StackDivider, VStack, Tooltip } from '@chakra-ui/react';
 import ChatConversation from './ChatConversation';
 import Textbox from './Textbox';
+import SenderDropdown from './SenderDropdown';
+
+
 
 export default function ChatWindow(): JSX.Element {
     return (
@@ -18,6 +21,7 @@ export default function ChatWindow(): JSX.Element {
             Chat with others!
             <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
           </Heading>
+          <SenderDropdown />
         <ChatConversation />
         <Textbox />
       </VStack>
