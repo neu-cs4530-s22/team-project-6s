@@ -14,15 +14,15 @@ export default class Chat {
   
     public occupantsByID: string[];
 
-    public messages: ChatMessage[];
+    public chatMessages: ChatMessage[];
 
     private _listeners: ChatListener[] = [];
   
-    constructor(id: string, occupantsByID: string[], location: ChatLocation, messages: ChatMessage[]) {
+    constructor(id: string, occupantsByID: string[], location: ChatLocation, chatMessages: ChatMessage[]) {
         this._id = id;
         this.occupantsByID = occupantsByID;
         this.location = location;
-        this.messages = messages;
+        this.chatMessages = chatMessages;
     }
 
     static fromServerChat(chatFromServer: ServerChat): Chat {
