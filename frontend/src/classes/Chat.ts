@@ -26,7 +26,7 @@ export default class Chat {
     }
 
     static fromServerChat(chatFromServer: ServerChat): Chat {
-      return new Chat(chatFromServer._id, chatFromServer._occupantsByID, chatFromServer.location, chatFromServer.messages);
+      return new Chat(chatFromServer._id, chatFromServer._occupantsByID, chatFromServer.location, chatFromServer.chatMessages);
     }
 
     addListener(listener: ChatListener) {
@@ -37,7 +37,7 @@ export default class Chat {
       this._listeners = this._listeners.filter(eachListener => eachListener !== listener);
     }
   }
-  export type ServerChat = { _id: string, _occupantsByID: string[], location: ChatLocation, messages: ChatMessage[] };
+  export type ServerChat = { _id: string, _occupantsByID: string[], location: ChatLocation, chatMessages: ChatMessage[] };
   
   export type ChatLocation = {
     x: number;
