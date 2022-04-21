@@ -330,7 +330,7 @@ export default class CoveyTownController {
    * @param privateMessage if the chat was a private message
    * @param privateMessageRecipientId who the private message was sent to 
    */
-   updateChatMessageListFromUserInput(chatID: String, sendingPlayerID: string, body: string, dateCreated: Date, 
+   updateChatMessageListFromUserInput(chatID: String, sendingPlayerID: string, body: string | File, dateCreated: Date, 
     privateMessage: boolean, privateMessageRecipientId: string|undefined ): boolean {
 
       const chat = this._chats.find((chat) => chat._id == chatID); 
