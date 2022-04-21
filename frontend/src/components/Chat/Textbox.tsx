@@ -57,13 +57,14 @@ export default function Textbox(): JSX.Element {
       checkIfInChat();
     }, [nearbyPlayers]);
 
-  function UploadFiles(): JSX.Element {
+    function UploadFiles(): JSX.Element {
+    // const [file, setFile] = useState<File>();
   
-  return(
-    <>
-    <Button data-testid="upload-button" style={{float: 'left'}} size='lg' onChange={(e) => {setMessage(message)}}>
-      Upload Files
-      <Input
+      return(
+        <>
+       <Button data-testid="upload-button" style={{float: 'left'}} size='lg'>
+          Upload Files
+         <Input
               type="file"
               height="100%"
               width="100%"
@@ -72,19 +73,30 @@ export default function Textbox(): JSX.Element {
               left="0"
               opacity="0"
               aria-hidden="true"
-              value={message}
-            />
-    </Button>
-    </>
-  )
-  } 
+              onChange={(e) => {
+                if(e.target !== null && e.target.files !== null) {
+                  setMessage(e.target.files[0]);
+                }
+              }}
+         />
+       </Button>
+       </>
+     )
+    }
+
+    function messageToString(messageToConvert: string | File): string {
+      if(messageToConvert instanceof File) {
+        return messageToConvert.name;
+      }
+      return messageToConvert;
+    }
 
     return (
       <>
       <VStack>
       <div>
         <div style={{float: 'left'}}>
-          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) }}}/>
+          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) }}}/>
         </div>
         <div style={{overflow: 'hidden'}}>
           {recipient === 'Everyone' ?
