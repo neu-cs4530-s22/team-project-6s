@@ -1,4 +1,4 @@
-import CoveyTownController from './CoveyTownController';
+import { CoveyTownController } from './CoveyTownController';
 import { CoveyTownList } from '../CoveyTypes';
 
 function passwordMatches(provided: string, expected: string): boolean {
