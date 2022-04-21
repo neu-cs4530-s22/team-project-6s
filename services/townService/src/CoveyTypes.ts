@@ -14,7 +14,7 @@ export type ChatMessage = {
   body: string | File;
   dateCreated: Date;
   privateMessage: boolean;
-  privateMessageRecipientId: string|undefined;
+  privateMessageRecipientId: string | undefined;
 };
 
 export type ChatLocation = {
