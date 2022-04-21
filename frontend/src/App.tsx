@@ -13,8 +13,6 @@ import React, {
 import { BrowserRouter } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import './App.css';
-import { Provider } from "react-redux";
-import store from './redux/store';
 import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
 import Chat, { ServerChat, ChatLocation, ChatMessage } from './classes/Chat';
@@ -371,13 +369,11 @@ export default function AppStateWrapper(): JSX.Element {
   return (
     <BrowserRouter>
       <ChakraProvider>
-        <Provider store={store}>
-          <MuiThemeProvider theme={theme}>
-            <AppStateProvider>
-              <EmbeddedTwilioAppWrapper />
-            </AppStateProvider>
-          </MuiThemeProvider>
-        </Provider>
+        <MuiThemeProvider theme={theme}>
+          <AppStateProvider>
+            <EmbeddedTwilioAppWrapper />
+          </AppStateProvider>
+        </MuiThemeProvider>
       </ChakraProvider>
     </BrowserRouter>
   );
