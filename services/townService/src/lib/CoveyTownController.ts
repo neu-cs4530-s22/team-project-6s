@@ -169,7 +169,7 @@ export default class CoveyTownController {
         this.removePlayerFromChat(player, activeChat);
       }
       // check if player's new location is within an existing chat & add them
-      for (let i = 0; i < this.chats.length; i+=1) {
+      for (let i = 0; i < this.chats.length; i += 1) {
         if (player.isWithinChat(this.chats[i])) {
           if (activeChat !== this.chats[i]) {
             player.activeChatID = this.chats[i]._id;
@@ -223,7 +223,7 @@ export default class CoveyTownController {
     // destroy chat if there is only one player left in it
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
-      this._players.map((p) => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
+      this._players.map((p) => ( if (p.activeChatID === chat._id){p.activeChatID = undefined}));
       this._listeners.forEach(listener => listener.onChatDestroyed(chat));
     } 
     player.activeChatID = undefined;
@@ -275,19 +275,18 @@ export default class CoveyTownController {
    *
    * @returns true if the chat conversation is successfully created, or false if not
    */
-   addChat(_anchorPlayer: Player): boolean {
+  addChat(_anchorPlayer: Player): boolean {
     // make sure they're not already in a chat convo
     let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer) && player !== _anchorPlayer);
-    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined)
+    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined;
 
     if (playersAroundAnchorPlayer.length === 0) {
-      return false
-    }
-    else {
+      return false }
+     {
       const newChat :Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
       playersAroundAnchorPlayer.forEach(player => player.activeChatID = newChat._id);
-      playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)))
+      playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)));
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
       this._chats.push(newChat);
 
