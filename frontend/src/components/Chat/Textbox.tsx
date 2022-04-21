@@ -8,7 +8,7 @@ import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import { useAppSelector, useAppDispatch } from '../../redux/reduxHooks'
 
 export default function Textbox(): JSX.Element {
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState<string | File>('');
     const [inChat, setInChat] = useState(false);
     const {apiClient, sessionToken, currentTownID, myPlayerID} = useCoveyAppState();
     const toast = useToast();
