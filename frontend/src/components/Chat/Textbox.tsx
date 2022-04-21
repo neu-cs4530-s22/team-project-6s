@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Input, Button, useToast, VStack } from '@chakra-ui/react';
 import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
+import { useAppSelector, useAppDispatch } from '../../redux/reduxHooks'
 
 export default function Textbox(): JSX.Element {
     const [message, setMessage] = useState<string | File>('');
@@ -12,6 +14,8 @@ export default function Textbox(): JSX.Element {
     const toast = useToast();
     const players = usePlayersInTown();
     const myPlayer = players.find((player) => player.id === myPlayerID);
+    const recipient = useAppSelector((state) => state.recipient.recipient)
+    // const dispatch = useAppDispatch()
 
     const sendMessage = async (messageBody: string | File, date: Date, privateMessage : boolean, privateMessageRecipientId?: string) => {
       try {
@@ -48,8 +52,6 @@ export default function Textbox(): JSX.Element {
         setInChat(false)
       }
     }
-
-    
 
     useEffect(() => {
       checkIfInChat();
@@ -97,10 +99,14 @@ export default function Textbox(): JSX.Element {
           <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) }}}/>
         </div>
         <div style={{overflow: 'hidden'}}>
-          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined) }}><ChatIcon /></Button>
+          {recipient === 'Everyone' ?
+          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined)}}><ChatIcon /></Button>
+          :
+          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), true, recipient)}}><ChatIcon /></Button>
+          }
         </div>
       </div>
-      <UploadFiles />
+      {/* <UploadFiles /> */}
       </VStack>
       </>
     );

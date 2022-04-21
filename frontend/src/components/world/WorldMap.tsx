@@ -534,7 +534,7 @@ class CoveyGameScene extends Phaser.Scene {
             this.emitMovement(localLastLocation);
           }
         } else {
-          if (cursorKeys.space.isDown && this.player) {
+          if (cursorKeys.shift.isDown && this.player) {
             const newConversation = new ConversationArea(
               conversationLabel,
               BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),

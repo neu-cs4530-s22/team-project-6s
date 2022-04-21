@@ -4,8 +4,6 @@ import ChatConversation from './ChatConversation';
 import Textbox from './Textbox';
 import SenderDropdown from './SenderDropdown';
 
-
-
 export default function ChatWindow(): JSX.Element {
     return (
       <VStack align="left"
@@ -17,11 +15,11 @@ export default function ChatWindow(): JSX.Element {
         height='100%'
         divider={<StackDivider borderColor='gray.200' />}
         borderRadius='4px'>
-          <Heading data-testid="heading" fontSize='xl' as='h1'>
-            Chat with others!
-            <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
-          </Heading>
-          <SenderDropdown />
+        <Heading data-testid="heading" fontSize='xl' as='h1'>
+          Chat with others!
+        <Tooltip data-testid="tooltip" label="Go near another player to start a chat">?</Tooltip>
+        </Heading>
+        <SenderDropdown />
         <ChatConversation />
         <Textbox />
       </VStack>
