@@ -3,7 +3,7 @@ import { mock, mockDeep, mockReset } from 'jest-mock-extended';
 import { Socket } from 'socket.io';
 import TwilioVideo from './TwilioVideo';
 import Player from '../types/Player';
-import CoveyTownController from './CoveyTownController';
+import { CoveyTownController } from './CoveyTownController';
 import CoveyTownListener from '../types/CoveyTownListener';
 import { UserLocation } from '../CoveyTypes';
 import PlayerSession from '../types/PlayerSession';
