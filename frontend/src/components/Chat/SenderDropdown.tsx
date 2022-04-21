@@ -1,12 +1,14 @@
 import {Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuItemOption, MenuList, MenuOptionGroup } from '@chakra-ui/react';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Player from '../../classes/Player';
 import useChatsInTown from '../../hooks/useChatsInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
-
+import { useAppSelector } from '../../redux/reduxHooks'
+import { setRecipient } from '../../redux/slice'
 
   export default function SenderDropdown() : JSX.Element{
       const {myPlayerID} = useCoveyAppState();
@@ -14,6 +16,8 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
       const myPlayer = players.find((player) => player.id === myPlayerID);
       const initChats = useChatsInTown();
       const curChat = initChats.find((chat) => chat._id === myPlayer?._activeChatID);
+      const dispatch = useDispatch()
+      console.log(useAppSelector((state) => state))
       // const occupantIDsInChat = useNearbyPlayers()
 
 
@@ -69,6 +73,9 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
     function privateFunctionality(player : Player | undefined) {
       setRecipientName(player ? player.userName : 'Everyone')
       setRecipientID(player ? player.id : 'Everyone')
+      dispatch(setRecipient(player ? player.id : 'Everyone'));
+      // setRecipientState(player ? player.id : 'Everyone')
+      
       // privateRecipientId = recipientID
       // console.log(`recip id is  ${recipientID}`)
       // console.log(privateRecipientId)
@@ -82,7 +89,7 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
     
     return (
         <Menu size="sm" closeOnSelect>
-          <MenuButton isDisabled={!inChat}>
+          <MenuButton /* isDisabled={!inChat} */>
             {`Send to: ${recipientName}`}
           </MenuButton>
           <MenuList minWidth='240px'>
