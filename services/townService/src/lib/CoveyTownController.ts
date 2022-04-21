@@ -163,13 +163,13 @@ export default class CoveyTownController {
 
     // see if player is within chatting distance of another
     if (!player.activeConversationArea) {
-      const activeChat = this.chats.find((c) => c._id === player.activeChatID)
+      const activeChat = this.chats.find((c) => c._id === player.activeChatID);
       // check if player has moved outside of chat 
       if (activeChat && !player.isWithinChat(activeChat)){
         this.removePlayerFromChat(player, activeChat);
       }
       // check if player's new location is within an existing chat & add them
-      for (let i=0; i < this.chats.length; i++) {
+      for (let i = 0; i < this.chats.length; i+=1) {
         if (player.isWithinChat(this.chats[i])) {
           if (activeChat !== this.chats[i]) {
             player.activeChatID = this.chats[i]._id;
@@ -181,7 +181,7 @@ export default class CoveyTownController {
         }
       }
 
-      if(!player.activeChatID){
+      if (!player.activeChatID){
         this.addChat(player);
       }
     }
@@ -217,13 +217,13 @@ export default class CoveyTownController {
    * @param player Player to remove from chat
    * @param chat Chat to remove player from
    */
-   removePlayerFromChat(player: Player, chat: Chat) : void {
+  removePlayerFromChat(player: Player, chat: Chat) : void {
     chat.occupantsByID.splice(chat.occupantsByID.findIndex(p=>p === player.id), 1);
 
     // destroy chat if there is only one player left in it
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
-      this._players.map(p => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
+      this._players.map((p) => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
       this._listeners.forEach(listener => listener.onChatDestroyed(chat));
     } 
     player.activeChatID = undefined;
