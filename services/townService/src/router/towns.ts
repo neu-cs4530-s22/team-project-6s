@@ -112,7 +112,7 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
   /**
    * Update a chat with a new message 
    */
-  app.patch('/towns/:townID/chats', express.json(), async (req, res) => {
+   app.patch('/towns/:townID/chats', express.json(), async (req, res) => {
     try {
       const result = chatUpdateHandler({
         coveyTownID: req.params.townID,

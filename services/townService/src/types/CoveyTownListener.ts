@@ -29,7 +29,7 @@ export default interface CoveyTownListener {
    * Called when a player's activeChat changes
    * @param player the player thats activeChat changed
    */
-  onPlayerActiveChatUpdated(player: Player): void;
+   onPlayerActiveChatUpdated(player: Player): void;
 
   /**
    * Called when a town is destroyed, causing all players to disconnect
@@ -40,19 +40,19 @@ export default interface CoveyTownListener {
    * Called when a chat is created or updated
    * @param chat the chat that is updated or created
    */
-  onChatUpdated(chat: Chat): void;
+   onChatUpdated(chat: Chat) : void;
 
-  /**
-  * Called when a chat is destroyed
-  * @param chat the chat that is destroyed
-  */
-  onChatDestroyed(chat: Chat): void;
-
+   /**
+   * Called when a chat is destroyed
+   * @param chat the chat that is destroyed
+   */
+  onChatDestroyed(chat: Chat) : void;
+  
   /**
    * Called when a conversation area is created or updated
    * @param conversationArea the conversation area that is updated or created
    */
-  onConversationAreaUpdated(conversationArea: ServerConversationArea): void;
+  onConversationAreaUpdated(conversationArea: ServerConversationArea) : void;
 
   /**
    * Called when a conversation area is destroyed

@@ -1,8 +1,7 @@
 import { nanoid } from 'nanoid';
 import { ServerConversationArea } from '../client/TownsServiceClient';
-import { UserLocation, ChatLocation } from '../CoveyTypes';
-
-// import Chat, { CHAT_RADIUS } from './Chat';
+import { UserLocation } from '../CoveyTypes';
+import Chat, { CHAT_RADIUS } from './Chat';
 
 /**
  * Each user who is connected to a town is represented by a Player object
@@ -66,7 +65,7 @@ export default class Player {
    * @param conversation 
    * @returns 
    */
-  isWithin(conversation: ServerConversationArea): boolean {
+  isWithin(conversation: ServerConversationArea) : boolean {
     return (
       this.location.x > conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
       this.location.x < conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
@@ -81,11 +80,11 @@ export default class Player {
    * @param otherPlayer 
    * @returns true if close enough to another player to create a chat, false if not
    */
-  isAround(anchorPlayer: Player): boolean {
-    const x = this.location.x - anchorPlayer.location.x;
-    const y = this.location.y - anchorPlayer.location.y;
+   isAround(anchorPlayer: Player) : boolean {
+    const x = this.location.x - anchorPlayer.location.x
+    const y = this.location.y - anchorPlayer.location.y
     return (
-      Math.sqrt(x ** 2 + y ** 2) < 80
+      Math.sqrt(x**2 + y**2) < CHAT_RADIUS
     );
   }
 
@@ -97,12 +96,12 @@ export default class Player {
    * @param conversation 
    * @returns 
    */
-  isWithinChat(chatLocation: ChatLocation): boolean {
+   isWithinChat(chat: Chat) : boolean {
     return (
-      this.location.x > chatLocation.x - chatLocation.radius &&
-      this.location.x < chatLocation.x + chatLocation.radius &&
-      this.location.y > chatLocation.y - chatLocation.radius &&
-      this.location.y < chatLocation.y + chatLocation.radius
+      this.location.x > chat.location.x - chat.location.radius  &&
+      this.location.x < chat.location.x + chat.location.radius &&
+      this.location.y > chat.location.y - chat.location.radius &&
+      this.location.y < chat.location.y + chat.location.radius
     );
   }
 
