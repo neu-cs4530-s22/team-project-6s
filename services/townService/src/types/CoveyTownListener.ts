@@ -1,4 +1,4 @@
-import { ServerConversationArea, ServerChat } from '../client/TownsServiceClient';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage } from '../CoveyTypes';
 import Chat from './Chat';
 import Player from './Player';
@@ -29,7 +29,7 @@ export default interface CoveyTownListener {
    * Called when a player's activeChat changes
    * @param player the player thats activeChat changed
    */
-   onPlayerActiveChatUpdated(player: Player): void;
+  onPlayerActiveChatUpdated(player: Player): void;
 
   /**
    * Called when a town is destroyed, causing all players to disconnect
@@ -40,9 +40,9 @@ export default interface CoveyTownListener {
    * Called when a chat is created or updated
    * @param chat the chat that is updated or created
    */
-   onChatUpdated(chat: Chat) : void;
+  onChatUpdated(chat: Chat) : void;
 
-   /**
+  /**
    * Called when a chat is destroyed
    * @param chat the chat that is destroyed
    */

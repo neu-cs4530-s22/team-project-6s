@@ -36,6 +36,9 @@ function mockCoveyListener(): CoveyTownListener {
     onPlayerActiveChatUpdated(player: Player){
       mockCoveyListenerOtherFns(player);
     },
+    onChatDestroyed(chat: Chat) {
+      mockCoveyListenerOtherFns(chat);
+    },
   };
 }
 

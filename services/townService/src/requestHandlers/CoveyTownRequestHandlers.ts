@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea, ChatUpdateRequest, ServerChat } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, ChatUpdateRequest } from '../client/TownsServiceClient';
 import Chat from '../types/Chat';
 
 /**
@@ -211,8 +211,8 @@ export function chatUpdateHandler(_requestData: ChatUpdateRequest): ResponseEnve
       isOK: false, response: {}, message: `Unable to send chat ${_requestData.body}`,
     };
   }
-  const success = townController.updateChatMessageListFromUserInput(_requestData.chatID,_requestData.sendingPlayerID,
-    _requestData.body,_requestData.dateCreated,_requestData.privateMessage,_requestData.privateMessageRecipientId);
+  const success = townController.updateChatMessageListFromUserInput(_requestData.chatID, _requestData.sendingPlayerID,
+    _requestData.body, _requestData.dateCreated, _requestData.privateMessage, _requestData.privateMessageRecipientId);
 
   return {
     isOK: success,
@@ -259,8 +259,8 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('chatMessage', message);
     },
     onPlayerActiveChatUpdated(player: Player){
-      socket.emit('playerActiveChatUpdated', player)
-    }
+      socket.emit('playerActiveChatUpdated', player);
+    },
   };
 }
 

@@ -1,9 +1,9 @@
 import React from "react";
-import { RenderResult } from "@testing-library/react";
-import  userEvent from "@testing-library/user-event";
+import { RenderResult, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
+
 import ChatWindow from "./ChatWindow";
 import ChatConversation from "./ChatConversation";
 import Textbox from "./Textbox";
@@ -14,7 +14,7 @@ describe("ChatWindow", () => {
   beforeEach(() => {
     renderedComponent = render(<ChatWindow />);
   });
-  
+
   describe("Displays title correctly", () => {
     it("Heading is defined", async () => {
       const heading = await renderedComponent.findByTestId("heading");
@@ -26,17 +26,17 @@ describe("ChatWindow", () => {
     it("Tooltip is defined", async () => {
       const tooltip = await renderedComponent.findByTestId("tooltip")
       userEvent.hover(tooltip);
-      expect(tooltip).toBeDefined;
+      expect(tooltip).toBeDefined();
     });
   });
 
   it("ChatConversation component is called", async () => {
-    const renderedComponent = render(<ChatConversation />);
-    expect(renderedComponent).toBeInTheDocument;
+    renderedComponent = render(<ChatConversation />);
+    expect(renderedComponent).toBeInTheDocument();
   });
 
   it("TextBox component is called", async () => {
-    const renderedComponent = render(<Textbox />);
-    expect(renderedComponent).toBeInTheDocument;
+    renderedComponent = render(<Textbox />);
+    expect(renderedComponent).toBeInTheDocument();
   });
 });
