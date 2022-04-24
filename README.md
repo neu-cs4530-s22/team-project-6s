@@ -43,5 +43,10 @@ Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWN
 
 ### Running the frontend
 
-In the `frontend` directory, run `npm start` (again, you'll need to run `npm install` the very first time). After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally.
+If this is the first time you run it, run `npm install redux @reduxjs/toolkit` and `npm install` in the `frontend` directory. If not, just run `npm start`. After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally. If there are still errors saying redux is not installed, navigate to the `components` folder in the `frontend` directory and run `npm install redux @reduxjs/toolkit` there.
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
+
+### Note about deployment
+
+We deployed using Netlify using the course instructions.
+The link - https://6261a2f7dcc9ce375fcd71d5--vigorous-johnson-5a3718.netlify.app/

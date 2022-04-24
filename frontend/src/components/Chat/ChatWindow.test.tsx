@@ -76,6 +76,9 @@ describe("ChatWindow", () => {
   beforeEach(() => {
 
     mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
+    mockUseAppSelector.mockImplementation((callback) => {
+      return callback(mockUseCoveyAppState);
+    });
 
 
     useDispatchMock.mockImplementation(() => useDispatchMock)
@@ -162,4 +165,5 @@ describe("ChatWindow", () => {
 
 //     renderedComponent.unmount();
 //   });
+
 });

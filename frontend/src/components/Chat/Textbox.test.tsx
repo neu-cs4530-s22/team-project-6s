@@ -60,6 +60,9 @@ describe("ChatConversation", () => {
   beforeEach(() => {
 
     mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
+    mockUseAppSelector.mockImplementation((callback) => {
+      return callback(mockUseCoveyAppState);
+    });
 
   });
 

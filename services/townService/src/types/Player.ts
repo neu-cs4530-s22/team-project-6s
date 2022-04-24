@@ -2,8 +2,6 @@ import { nanoid } from 'nanoid';
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation, ChatLocation } from '../CoveyTypes';
 
-// import Chat, { CHAT_RADIUS } from './Chat';
-
 /**
  * Each user who is connected to a town is represented by a Player object
  */
