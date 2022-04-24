@@ -6,6 +6,7 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import { useAppSelector, useAppDispatch } from '../../redux/reduxHooks'
+import useConversationAreas from '../../hooks/useConversationAreas';
 
 export default function Textbox(): JSX.Element {
     const [message, setMessage] = useState<string | File>('');
@@ -15,6 +16,7 @@ export default function Textbox(): JSX.Element {
     const players = usePlayersInTown();
     const myPlayer = players.find((player) => player.id === myPlayerID);
     const recipient = useAppSelector((state) => state.recipient.recipient)
+    const convoAreas = useConversationAreas();
     // const dispatch = useAppDispatch()
 
     const sendMessage = async (messageBody: string | File, date: Date, privateMessage : boolean, privateMessageRecipientId?: string) => {
@@ -45,8 +47,14 @@ export default function Textbox(): JSX.Element {
   
     const nearbyPlayers = useNearbyPlayers();
 
+    function checkIfInConvoArea() {
+      const caWithMyPlayerAsOccupant = convoAreas.filter((ca) => ca.occupants.includes(myPlayerID));
+      console.log(caWithMyPlayerAsOccupant);
+      return caWithMyPlayerAsOccupant;
+    }
+
     function checkIfInChat() {
-      if (nearbyPlayers.length > 0) {
+      if (nearbyPlayers.length > 0 && checkIfInConvoArea().length === 0) {
         setInChat(true)
       } else {
         setInChat(false)
@@ -55,7 +63,7 @@ export default function Textbox(): JSX.Element {
 
     useEffect(() => {
       checkIfInChat();
-    }, [nearbyPlayers]);
+    }, [nearbyPlayers, convoAreas]);
 
     function UploadFiles(): JSX.Element {
     // const [file, setFile] = useState<File>();
