@@ -55,11 +55,6 @@ function wrappedTownChatWindow() {
     <Textbox/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
-describe("ChatConversation", () => {
-  let renderedComponent: RenderResult;
-
-  beforeEach(() => {
-
     mockUseAppSelector.mockImplementation((callback) => {
       return callback(mockUseCoveyAppState);
     });

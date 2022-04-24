@@ -72,11 +72,6 @@ function wrappedTownChatWindow() {
     <ChatWindow/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
-describe("ChatWindow", () => {
-  let renderedComponent: RenderResult;
-
-  beforeEach(() => {
-
     mockUseAppSelector.mockImplementation((callback) => {
       return callback(mockUseCoveyAppState);
     });
@@ -168,4 +163,5 @@ describe("ChatWindow", () => {
 
 //     renderedComponent.unmount();
 //   });
+
 });

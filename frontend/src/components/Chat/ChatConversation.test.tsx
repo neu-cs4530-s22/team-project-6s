@@ -46,9 +46,6 @@ function wrappedTown() {
     <ChatConversation/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
-describe("ChatConversation", () => {
-  let renderedComponent: RenderResult;
-
   it("Chat container is displayed", async () => {
       // @ts-ignore
     mockUseCoveyAppState.currentTownID = nanoid();
@@ -63,4 +60,5 @@ describe("ChatConversation", () => {
 
     renderedComponent.unmount();
     });
+
 });
