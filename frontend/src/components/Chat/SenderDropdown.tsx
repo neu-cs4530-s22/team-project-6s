@@ -14,12 +14,7 @@ export default function SenderDropdown(): JSX.Element {
   const players = usePlayersInTown();
   const myPlayer = players.find((player) => player.id === myPlayerID);
   const dispatch = useDispatch()
-  console.log(useAppSelector((state) => state))
-  // const occupantIDsInChat = useNearbyPlayers()
-
-
-  // const occupantsAsPlayers = occupantIDsInChat?.map((id)=>
-  // players.find((player) => player.id === id))
+  
   const occupantsAsPlayers = useNearbyPlayers()
   const occupantsAsPlayersMinusMe = occupantsAsPlayers?.filter((player) => player !== myPlayer)
   const [recipientName, setRecipientName] = useState('Everyone')
