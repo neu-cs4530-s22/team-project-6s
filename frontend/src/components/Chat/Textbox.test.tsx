@@ -1,13 +1,12 @@
 import React from "react";
-import { RenderResult } from "@testing-library/react";
+import { RenderResult , render } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
-import Textbox from "./Textbox";
 import { ChakraProvider } from '@chakra-ui/react'
+import { nanoid } from 'nanoid';
+import Textbox from "./Textbox";
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
-import { nanoid } from 'nanoid';
 
 const mockUseAppSelector = jest.fn();
 
@@ -60,9 +59,7 @@ describe("ChatConversation", () => {
 
   beforeEach(() => {
 
-    mockUseAppSelector.mockImplementation((callback) => {
-      return callback(mockUseCoveyAppState);
-    });
+    mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
 
   });
 

@@ -1,20 +1,18 @@
 import React from "react";
-import { RenderResult } from "@testing-library/react";
+import { RenderResult , render, fireEvent } from "@testing-library/react";
 import { ChakraProvider } from '@chakra-ui/react'
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
-import { render, fireEvent } from '@testing-library/react'
 import { nanoid } from 'nanoid';
+import  userEvent from "@testing-library/user-event";
+import { useSelector , useDispatch } from "react-redux";
+import * as reactRedux from 'react-redux'
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 import ChatWindow from "./ChatWindow";
 import ChatConversation from "./ChatConversation";
 import Textbox from "./Textbox";
-import  userEvent from "@testing-library/user-event";
 import { useAppSelector } from '../../redux/reduxHooks'
-import { useSelector } from "react-redux";
-import * as reactRedux from 'react-redux'
-import { useDispatch } from 'react-redux';
 
 const useDispatchMock = jest.fn();
 
@@ -77,14 +75,10 @@ describe("ChatWindow", () => {
 
   beforeEach(() => {
 
-    mockUseAppSelector.mockImplementation((callback) => {
-      return callback(mockUseCoveyAppState);
-    });
+    mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
 
 
-    useDispatchMock.mockImplementation(() => {
-        return useDispatchMock;
-    })
+    useDispatchMock.mockImplementation(() => useDispatchMock)
   });
   afterEach(() => {
     mockUseAppSelector.mockClear();

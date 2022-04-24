@@ -1,12 +1,11 @@
 import React from "react";
-import { RenderResult } from "@testing-library/react";
+import { RenderResult , render } from "@testing-library/react";
 import { ChakraProvider } from '@chakra-ui/react'
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
-import ChatConversation from "./ChatConversation";
 import { nanoid } from 'nanoid';
 import { TargetElement } from '@testing-library/user-event';
+import ChatConversation from "./ChatConversation";
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 
