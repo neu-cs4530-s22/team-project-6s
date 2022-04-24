@@ -10,14 +10,14 @@ export const CHAT_RADIUS = 80;
 export default class Chat {
   /**  * */
   public location: ChatLocation;
-
+  
   /** The unique identifier for this chat * */
   public readonly _id: string;
 
   public occupantsByID: string[];
 
   public chatMessages: ChatMessage[];
-
+  
   constructor(anchorPlayer: Player) {
     this.location = {
       x: anchorPlayer.location.x,
@@ -31,10 +31,10 @@ export default class Chat {
   }
 
   /**
-   * Appends a new message to this chat's stored lists of messages 
-   * 
-   * @param message new message 
-   */
+     * Appends a new message to this chat's stored lists of messages 
+     * 
+     * @param message new message 
+     */
   addChatMessage(message: ChatMessage): void {
     this.chatMessages.push(message);
   }

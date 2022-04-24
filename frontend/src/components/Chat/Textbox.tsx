@@ -7,88 +7,88 @@ import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import { useAppSelector } from '../../redux/reduxHooks'
 
 export default function Textbox(): JSX.Element {
-    const [message, setMessage] = useState<string | File>('');
-    const [inChat, setInChat] = useState(false);
-    const {apiClient, sessionToken, currentTownID, myPlayerID} = useCoveyAppState();
-    const toast = useToast();
-    const players = usePlayersInTown();
-    const myPlayer = players.find((player) => player.id === myPlayerID);
-    const recipient = useAppSelector((state) => state.recipient.recipient)
-    // const dispatch = useAppDispatch()
+  const [message, setMessage] = useState<string | File>('');
+  const [inChat, setInChat] = useState(false);
+  const { apiClient, sessionToken, currentTownID, myPlayerID } = useCoveyAppState();
+  const toast = useToast();
+  const players = usePlayersInTown();
+  const myPlayer = players.find((player) => player.id === myPlayerID);
+  const recipient = useAppSelector((state) => state.recipient.recipient)
+  // const dispatch = useAppDispatch()
 
-    const sendMessage = async (messageBody: string | File, date: Date, privateMessage : boolean, privateMessageRecipientId?: string) => {
-      try {
-        await apiClient.updateChat({
-          coveyTownID: currentTownID,
-          chatID: myPlayer?._activeChatID,
-          sessionToken,
-          sendingPlayerID: myPlayerID,
-          body: messageBody,
-          dateCreated: date,
-          privateMessage ,
-          privateMessageRecipientId,
-        });
-        setMessage('');
-        toast({
-          title: 'Message sent!',
-          status: 'success',
-        });
-      } catch (err) {
-        toast({
-          title: 'Unable to send chat message',
-          description: err.toString(),
-          status: 'error',
-        });
-      }
+  const sendMessage = async (messageBody: string | File, date: Date, privateMessage: boolean, privateMessageRecipientId?: string) => {
+    try {
+      await apiClient.updateChat({
+        coveyTownID: currentTownID,
+        chatID: myPlayer?._activeChatID,
+        sessionToken,
+        sendingPlayerID: myPlayerID,
+        body: messageBody,
+        dateCreated: date,
+        privateMessage,
+        privateMessageRecipientId,
+      });
+      setMessage('');
+      toast({
+        title: 'Message sent!',
+        status: 'success',
+      });
+    } catch (err) {
+      toast({
+        title: 'Unable to send chat message',
+        description: err.toString(),
+        status: 'error',
+      });
     }
-  
-    const nearbyPlayers = useNearbyPlayers();
+  }
 
-    function checkIfInChat() {
-      if (nearbyPlayers.length > 0) {
-        setInChat(true)
-      } else {
-        setInChat(false)
-      }
+  const nearbyPlayers = useNearbyPlayers();
+
+  function checkIfInChat() {
+    if (nearbyPlayers.length > 0) {
+      setInChat(true)
+    } else {
+      setInChat(false)
     }
+  }
 
     useEffect(() => {
       checkIfInChat();
     });
 
-    function UploadFiles(): JSX.Element {
+  function UploadFiles(): JSX.Element {
     // const [file, setFile] = useState<File>();
-  
-      return(
-        <>
-       <Button data-testid="upload-button" style={{float: 'left'}} size='lg'>
-          Upload Files
-         <Input
-              type="file"
-              height="100%"
-              width="100%"
-              position="absolute"
-              top="0"
-              left="0"
-              opacity="0"
-              aria-hidden="true"
-              onChange={(e) => {
-                if(e.target !== null && e.target.files !== null) {
-                  setMessage(e.target.files[0]);
-                }
-              }}
-         />
-       </Button>
-       </>
-     )
-    }
 
-    function messageToString(messageToConvert: string | File): string {
-      if(messageToConvert instanceof File) {
-        return messageToConvert.name;
-      }
-      return messageToConvert;
+    return (
+      <>
+        <Button data-testid="upload-button" style={{ float: 'left' }} size='lg'>
+          Upload Files
+          <Input
+            type="file"
+            height="100%"
+            width="100%"
+            position="absolute"
+            top="0"
+            left="0"
+            opacity="0"
+            aria-hidden="true"
+            onChange={(e) => {
+              if (e.target !== null && e.target.files !== null) {
+                setMessage(e.target.files[0]);
+              }
+            }}
+          />
+        </Button>
+      </>
+    )
+  }
+
+  function messageToString(messageToConvert: string | File): string {
+    if (messageToConvert instanceof File) {
+      return messageToConvert.name;
     }
+    return messageToConvert;
+  }
 
     const configureMessage = async () => {
       if (recipient === 'Everyone') {
@@ -112,6 +112,6 @@ export default function Textbox(): JSX.Element {
       </div>
       <UploadFiles />
       </VStack>
-      </>
-    );
-  }
+    </>
+  );
+}
