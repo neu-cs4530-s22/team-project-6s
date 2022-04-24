@@ -45,8 +45,11 @@ function wrappedTown() {
     <ChatConversation/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
+describe("ChatWindow", () => {
+    let renderedComponent: RenderResult;
+
   it("Chat container is displayed", async () => {
-      // @ts-ignore
+    // @ts-ignore
     mockUseCoveyAppState.currentTownID = nanoid();
     // @ts-ignore
     mockUseCoveyAppState.currentTownFriendlyName = true;
@@ -59,5 +62,4 @@ function wrappedTown() {
 
     renderedComponent.unmount();
     });
-
 });
