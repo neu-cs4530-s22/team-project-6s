@@ -17,7 +17,6 @@ import { setRecipient } from '../../redux/slice'
       const initChats = useChatsInTown();
       const curChat = initChats.find((chat) => chat._id === myPlayer?._activeChatID);
       const dispatch = useDispatch()
-      console.log(useAppSelector((state) => state))
       // const occupantIDsInChat = useNearbyPlayers()
 
 
