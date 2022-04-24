@@ -10,7 +10,7 @@ import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 type SentMessageProps = {
     message: ChatMessage
 }
-function SentMessage({message}: SentMessageProps): JSX.Element {
+function SentMessage({ message }: SentMessageProps): JSX.Element {
     const date = message.dateCreated;
     const recipientId = message.privateMessageRecipientId;
     const recipient = usePlayersInTown().find((player) => player.id === recipientId)?.userName
@@ -19,12 +19,12 @@ function SentMessage({message}: SentMessageProps): JSX.Element {
         <Box textAlign="right">
             <Box>
                 {message.privateMessage ?
-                <p>Me<span style={{color: 'red'}}> to {recipient}</span> &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
-                :
-                <p>Me &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
+                    <p>Me<span style={{ color: 'red' }}> to {recipient}</span> &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
+                    :
+                    <p>Me &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
                 }
             </Box>
-            <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{overflow: "auto"}}>
+            <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{ overflow: "auto" }}>
                 {message.body}
             </Box>
         </Box>
@@ -36,27 +36,27 @@ type ReceivedMessageProps = {
     author: string | undefined,
     currentPlayerId: string,
 }
-function ReceivedMessage({message, author, currentPlayerId}: ReceivedMessageProps): JSX.Element {
+function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessageProps): JSX.Element {
     const players = usePlayersInTown();
     const authorPlayer = players.find((player) => player.id === author);
     const date = message.dateCreated;
     const recipientId = message.privateMessageRecipientId;
-    
+  
     if (message.privateMessage) {
         return (
             recipientId === currentPlayerId ? <Box textAlign="left">
-            <Box>
-                {message.privateMessage ?
-                <p>{authorPlayer?.userName || 'Sender'}<span style={{color: 'red'}}> to Me</span> &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
-                :
-                <></>
-                }
+                <Box>
+                    {message.privateMessage ?
+                        <p>{authorPlayer?.userName || 'Sender'}<span style={{ color: 'red' }}> to Me</span> &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
+                        :
+                        <></>
+                    }
+                </Box>
+                <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{ overflow: "auto" }}>
+                    {message.body}
+                </Box>
             </Box>
-            <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{overflow: "auto"}}>
-                {message.body}
-            </Box>
-        </Box>
-        : <></>
+                : <></>
         )
     }
     return (
@@ -64,7 +64,7 @@ function ReceivedMessage({message, author, currentPlayerId}: ReceivedMessageProp
             <Box>
                 <p>{authorPlayer?.userName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
-            <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{overflow: "auto"}}>
+            <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{ overflow: "auto" }}>
                 {message.body}
             </Box>
         </Box>
@@ -72,7 +72,7 @@ function ReceivedMessage({message, author, currentPlayerId}: ReceivedMessageProp
 }
 
 export default function ChatConversation(): JSX.Element {
-    const {myPlayerID} = useCoveyAppState();
+    const { myPlayerID } = useCoveyAppState();
     const players = usePlayersInTown();
     const myPlayer = players.find((player) => player.id === myPlayerID);
     const chats = useChatsInTown();
@@ -83,13 +83,13 @@ export default function ChatConversation(): JSX.Element {
 
     function checkIfInChat() {
         if (nearbyPlayers.length > 0) {
-          setInChat(true)
+            setInChat(true)
         } else {
-          setInChat(false)
+            setInChat(false)
         }
-      }
-  
-      useEffect(() => {
+    }
+
+    useEffect(() => {
         checkIfInChat();
       });
 
@@ -102,4 +102,4 @@ export default function ChatConversation(): JSX.Element {
           </Stack>
       </div>
     );
-  }
+}

@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid';
-
 export const CHAT_RADIUS = 80;
 
 export type ChatListener = {

@@ -15,7 +15,7 @@ import { io, Socket } from 'socket.io-client';
 import './App.css';
 import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
-import Chat, { ServerChat, ChatLocation, ChatMessage } from './classes/Chat';
+import Chat, { ChatMessage } from './classes/Chat';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import Login from './components/Login/Login';
