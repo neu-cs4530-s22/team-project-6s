@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Heading, StackDivider, VStack, Tooltip } from '@chakra-ui/react';
 import ChatConversation from './ChatConversation';
 import Textbox from './Textbox';
