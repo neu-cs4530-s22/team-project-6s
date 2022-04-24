@@ -12,7 +12,7 @@ export default function ChatWindow(): JSX.Element {
         padding={2}
         marginRight={2}
         borderColor='gray.500'
-        height='100%'
+        height='770px'
         divider={<StackDivider borderColor='gray.200' />}
         borderRadius='4px'>
         <Heading data-testid="heading" fontSize='xl' as='h1'>
