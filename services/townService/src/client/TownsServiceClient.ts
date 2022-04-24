@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { ChatLocation, ChatMessage, UserLocation } from '../CoveyTypes';
-import Chat from '../types/Chat';
+import { ChatLocation, UserLocation } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _activeChatID: string };
@@ -106,7 +105,7 @@ export interface TownUpdateRequest {
 /**
  * Payload sent by the client to update a chat with a new message.
  */
- export interface ChatMessageUpdateRequest {
+export interface ChatUpdateRequest {
   coveyTownID: string;
   chatID: string;
   sessionToken: string;
@@ -194,6 +193,11 @@ export default class TownsServiceClient {
 
   async createConversationArea(requestData: ConversationAreaCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async updateChat(requestData: ChatUpdateRequest): Promise<void> {
+    const responseWrapper = await this._axios.patch<ResponseEnvelope<void>>(`/towns/${requestData.coveyTownID}/chats`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

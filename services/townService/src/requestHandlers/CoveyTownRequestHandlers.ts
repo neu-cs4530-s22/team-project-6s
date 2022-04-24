@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea, ChatMessageUpdateRequest, ServerChat } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ServerConversationArea, ChatUpdateRequest, ServerChat } from '../client/TownsServiceClient';
 import Chat from '../types/Chat';
 
 /**
@@ -185,10 +185,10 @@ export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvel
  * * Ask the TownController to create the conversation area
  * @param _requestData Conversation area create request
  */
-export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest) : ResponseEnvelope<Record<string, null>> {
+export function conversationAreaCreateHandler(_requestData: ConversationAreaCreateRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
-  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+  if (!townController?.getSessionByToken(_requestData.sessionToken)) {
     return {
       isOK: false, response: {}, message: `Unable to create conversation area ${_requestData.conversationArea.label} with topic ${_requestData.conversationArea.topic}`,
     };
@@ -203,16 +203,16 @@ export function conversationAreaCreateHandler(_requestData: ConversationAreaCrea
 }
 
 
-export function chatUpdateHandler(_requestData: ChatMessageUpdateRequest): ResponseEnvelope<Record<string, null>> {
+export function chatUpdateHandler(_requestData: ChatUpdateRequest): ResponseEnvelope<Record<string, null>> {
   const townsStore = CoveyTownsStore.getInstance();
   const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
-  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+  if (!townController?.getSessionByToken(_requestData.sessionToken)) {
     return {
       isOK: false, response: {}, message: `Unable to send chat ${_requestData.body}`,
     };
   }
-  const success = townController.updateChatMessageListFromUserInput(_requestData.chatID,_requestData.sendingPlayerID,
-    _requestData.body,_requestData.dateCreated,_requestData.privateMessage,_requestData.privateMessageRecipientId);
+  const success = townController.updateChatMessageListFromUserInput(_requestData.chatID, _requestData.sendingPlayerID,
+    _requestData.body, _requestData.dateCreated, _requestData.privateMessage, _requestData.privateMessageRecipientId);
 
   return {
     isOK: success,
@@ -243,24 +243,24 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    onConversationAreaDestroyed(conversation: ServerConversationArea){
+    onConversationAreaDestroyed(conversation: ServerConversationArea) {
       socket.emit('conversationDestroyed', conversation);
     },
-    onConversationAreaUpdated(conversation: ServerConversationArea){
+    onConversationAreaUpdated(conversation: ServerConversationArea) {
       socket.emit('conversationUpdated', conversation);
     },
-    onChatUpdated(chat: Chat){
+    onChatUpdated(chat: Chat) {
       socket.emit('chatUpdated', chat);
     },
-    onChatDestroyed(chat: Chat){
+    onChatDestroyed(chat: Chat) {
       socket.emit('chatDestroyed', chat);
     },
-    onChatMessage(message: ChatMessage){
+    onChatMessage(message: ChatMessage) {
       socket.emit('chatMessage', message);
     },
-    onPlayerActiveChatUpdated(player: Player){
-      socket.emit('playerActiveChatUpdated', player)
-    }
+    onPlayerActiveChatUpdated(player: Player) {
+      socket.emit('playerActiveChatUpdated', player);
+    },
   };
 }
 

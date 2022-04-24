@@ -1,5 +1,4 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { forEach } from 'ramda';
 import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import Chat from '../types/Chat';
@@ -164,14 +163,14 @@ export default class CoveyTownController {
 
     // see if player is within chatting distance of another
     if (!player.activeConversationArea) {
-      const activeChat = this.chats.find((c) => c._id === player.activeChatID)
+      const activeChat = this.chats.find((c) => c._id === player.activeChatID);
       // check if player has moved outside of chat 
-      if (activeChat && !player.isWithinChat(activeChat)){
+      if (activeChat && !player.isWithinChat(activeChat.location)){
         this.removePlayerFromChat(player, activeChat);
       }
       // check if player's new location is within an existing chat & add them
-      for (let i=0; i < this.chats.length; i++) {
-        if (player.isWithinChat(this.chats[i])) {
+      for (let i = 0; i < this.chats.length; i += 1) {
+        if (player.isWithinChat(this.chats[i].location)) {
           if (activeChat !== this.chats[i]) {
             player.activeChatID = this.chats[i]._id;
             this.chats[i].occupantsByID.push(player.id);
@@ -182,7 +181,7 @@ export default class CoveyTownController {
         }
       }
 
-      if(!player.activeChatID){
+      if (!player.activeChatID){
         this.addChat(player);
       }
     }
@@ -218,13 +217,13 @@ export default class CoveyTownController {
    * @param player Player to remove from chat
    * @param chat Chat to remove player from
    */
-   removePlayerFromChat(player: Player, chat: Chat) : void {
+  removePlayerFromChat(player: Player, chat: Chat) : void {
     chat.occupantsByID.splice(chat.occupantsByID.findIndex(p=>p === player.id), 1);
 
     // destroy chat if there is only one player left in it
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
-      this._players.map(p => { if (p.activeChatID === chat._id){p.activeChatID = undefined}});
+      this._players.forEach((p) => {if (p.activeChatID === chat._id) {p.activeChatID = undefined;}});
       this._listeners.forEach(listener => listener.onChatDestroyed(chat));
     } 
     player.activeChatID = undefined;
@@ -276,19 +275,20 @@ export default class CoveyTownController {
    *
    * @returns true if the chat conversation is successfully created, or false if not
    */
-   addChat(_anchorPlayer: Player): boolean {
+  addChat(_anchorPlayer: Player): boolean {
     // make sure they're not already in a chat convo
     let playersAroundAnchorPlayer = this.players.filter(player => player.isAround(_anchorPlayer) && player !== _anchorPlayer);
-    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined)
+    playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined);
 
     if (playersAroundAnchorPlayer.length === 0) {
-      return false
+      return false; 
     }
-    else {
+    {
       const newChat :Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
-      playersAroundAnchorPlayer.forEach(player => player.activeChatID = newChat._id);
-      playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)))
+      // eslint-disable-next-line
+      playersAroundAnchorPlayer.forEach((player) => player.activeChatID = newChat._id);
+      playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)));
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
       this._chats.push(newChat);
 
@@ -331,26 +331,26 @@ export default class CoveyTownController {
    * @param privateMessage if the chat was a private message
    * @param privateMessageRecipientId who the private message was sent to 
    */
-   updateChatMessageListFromUserInput(chatID: String, sendingPlayerID: string, body: string, dateCreated: Date, 
-    privateMessage: boolean, privateMessageRecipientId: string|undefined ): boolean {
+  updateChatMessageListFromUserInput(chatID: string, sendingPlayerID: string, body: string | File, dateCreated: Date, 
+    privateMessage: boolean, privateMessageRecipientId: string | undefined ): boolean {
 
-      const chat = this._chats.find((chat) => chat._id == chatID); 
+    const currentChat = this._chats.find((chat) => chat._id === chatID); 
 
-      if (!chat) {
-        return false;
-      }
-      const message = {author :  sendingPlayerID,
-        sid: chat._id,
-        body: body,
-        dateCreated: dateCreated,
-        privateMessage: privateMessage,
-        privateMessageRecipientId: privateMessageRecipientId }
+    if (!currentChat) {
+      return false;
+    }
+    const message = { author :  sendingPlayerID,
+      sid: currentChat._id,
+      body,
+      dateCreated,
+      privateMessage,
+      privateMessageRecipientId };
 
-        chat.addChatMessage(message);
-        this._listeners.forEach(listener => listener.onChatMessage(message));
-        this._listeners.forEach(listener => listener.onChatUpdated(chat));
+    currentChat.addChatMessage(message);
+    this._listeners.forEach(listener => listener.onChatMessage(message));
+    this._listeners.forEach(listener => listener.onChatUpdated(currentChat));
 
-      return true;
+    return true;
   }
 
   /**
@@ -393,7 +393,7 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onChatMessage(message));
   }
 
-/*   onChatCreate(chat: Chat): void {
+  /*   onChatCreate(chat: Chat): void {
     this._listeners.forEach(listener => listener.onChatCreate(chat));
   } */
 
