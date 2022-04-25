@@ -14,8 +14,9 @@ export default function Textbox(): JSX.Element {
   const toast = useToast();
   const players = usePlayersInTown();
   const myPlayer = players.find((player) => player.id === myPlayerID);
-  const recipient = useAppSelector((state) => state.recipient.recipient)
-  const video = useMaybeVideo()
+  const recipient = useAppSelector((state) => state.recipient.recipient);
+  const convoAreas = useConversationAreas();
+  const video = useMaybeVideo();
   const [focused, setFocused] = React.useState(false);
   const onFocus = () => setFocused(true);
   const onBlur = () => setFocused(false);
