@@ -10,7 +10,8 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
-import { CHAT_RADIUS } from '../types/Chat';
+import Chat, { CHAT_RADIUS } from '../types/Chat';
+import { getExpectedBodyHash } from 'twilio/lib/webhooks/webhooks';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -47,8 +48,8 @@ describe('CoveyTownController', () => {
   describe('town listeners and events', () => {
     let testingTown: CoveyTownController;
     const mockListeners = [mock<CoveyTownListener>(),
-      mock<CoveyTownListener>(),
-      mock<CoveyTownListener>()];
+    mock<CoveyTownListener>(),
+    mock<CoveyTownListener>()];
     beforeEach(() => {
       const townName = `town listeners and events tests ${nanoid()}`;
       testingTown = new CoveyTownController(townName, false);
@@ -527,7 +528,7 @@ describe('CoveyTownController', () => {
   describe('addChat', () => {
     let testingTown: CoveyTownController;
     beforeEach(() => {
-      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      const townName = `addChat test town ${nanoid()}`;
       testingTown = new CoveyTownController(townName, false);
     });
     it('should return false if there are no players within a chat radius of the anchor player', async () => {
@@ -663,12 +664,49 @@ describe('CoveyTownController', () => {
       expect(player4.activeChatID).toBeDefined();
       expect(player5.activeChatID).toBeUndefined();
     });
+    it('should emit an onPlayerActiveChatUpdated event for the anchor player and any other players in the new chat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      let newLocation: UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(mockListener.onPlayerActiveChatUpdated).toHaveBeenCalledTimes(2);
+    });
+    it('should emit an onChatUpdated event for new chat', async () => {
+      const anchorPlayer = new Player(nanoid());
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(anchorPlayer);
+      await testingTown.addPlayer(player2);
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      let newLocation: UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: undefined };
+      anchorPlayer.location = newLocation;
+
+      newLocation = { moving: false, rotation: 'front', x: 23, y: 23, conversationLabel: undefined };
+      player2.location = newLocation;
+
+      testingTown.addChat(anchorPlayer);
+      expect(mockListener.onChatUpdated).toHaveBeenCalledTimes(1);
+      expect(mockListener.onChatUpdated).toHaveBeenCalledWith(testingTown.chats[0]);
+    });
   });
 
   describe('removePlayerFromChat', () => {
     let testingTown: CoveyTownController;
     beforeEach(() => {
-      const townName = `updatePlayerLocation test town ${nanoid()}`;
+      const townName = `removePlayerFromChat test town ${nanoid()}`;
       testingTown = new CoveyTownController(townName, false);
     });
 
@@ -816,6 +854,124 @@ describe('CoveyTownController', () => {
 
       expect(anchorPlayer.activeChatID).toBeUndefined();
       expect(player2.activeChatID).toBeUndefined();
+    });
+    it('should emit an onPlayerActiveChatUpdated event when a player is removed from a chat', async () => {
+      const player = mock<Player>();
+      const chat = mock<Chat>();
+      const players = [player.id, 'extra', 'extra2'];
+      chat.occupantsByID = players;
+      player.activeChatID = chat._id;
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      testingTown.removePlayerFromChat(player, chat);
+      expect(mockListener.onPlayerActiveChatUpdated).toBeCalledTimes(1);
+      expect(mockListener.onPlayerActiveChatUpdated).toBeCalledWith(player);
+    });
+    it('should emit an onChatDestroyed event when only one player is left in a chat and the chat is destroyed', async () => {
+      const player = mock<Player>();
+      const chat = mock<Chat>();
+      chat.occupantsByID = [player.id, 'extra'];
+      player.activeChatID = chat._id;
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      testingTown.removePlayerFromChat(player, chat);
+      expect(mockListener.onChatDestroyed).toBeCalledTimes(1);
+      expect(mockListener.onChatDestroyed).toBeCalledWith(chat);
+      expect(mockListener.onPlayerActiveChatUpdated).toBeCalledTimes(1);
+      expect(mockListener.onPlayerActiveChatUpdated).toBeCalledWith(player);
+    });
+  });
+
+  describe('updateChatMessageListFromUserInput', () => {
+    let testingTown: CoveyTownController;
+    beforeEach(() => {
+      const townName = `updateChatMessageListFromUserInput test town ${nanoid()}`;
+      testingTown = new CoveyTownController(townName, false);
+    });
+    it('should return false if there are no active chats', async () => {
+      const result = testingTown.updateChatMessageListFromUserInput('test', 'test', 'test', new Date(), false, undefined);
+      expect(result).toBe(false);
+    });
+    it('should return false if there is no chat with the given chat id', async () => {
+      const chat = mock<Chat>();
+      expect(chat._id).not.toBe('test');
+      const result = testingTown.updateChatMessageListFromUserInput('test', 'test', 'test', new Date(), false, undefined);
+      expect(result).toBe(false);
+    });
+    it('should return true and call addChatMessage on the given chat if the ids match', async () => {
+      const chat = mock<Chat>();
+      testingTown.chats.push(chat);
+
+      const message = {
+        author: 'test',
+        sid: chat._id,
+        body: 'test',
+        dateCreated: new Date(),
+        privateMessage: false,
+        privateMessageRecipientId: undefined,
+      };
+
+      const result = testingTown.updateChatMessageListFromUserInput(chat._id, 'test', message.body, message.dateCreated, message.privateMessage, message.privateMessageRecipientId);
+      expect(result).toBe(true);
+      expect(chat.addChatMessage).toBeCalledTimes(1);
+      expect(chat.addChatMessage).toBeCalledWith(message);
+    });
+    it('should return true when a message is successfully sent and update the corresponding chat\'s list of messages', async () => {
+      const player = new Player(nanoid());
+      await testingTown.addPlayer(player);
+
+      const player2 = new Player(nanoid());
+      await testingTown.addPlayer(player2);
+      expect(testingTown.players.length).toBe(2);
+
+      const locationInChat: UserLocation = { moving: false, rotation: 'front', x: 10, y: 10, conversationLabel: undefined };
+      const locationInChat2: UserLocation = { moving: false, rotation: 'front', x: 11, y: 11, conversationLabel: undefined };
+
+      testingTown.updatePlayerLocation(player, locationInChat);
+      testingTown.updatePlayerLocation(player2, locationInChat2);
+      const chat = testingTown.chats[0];
+      expect(chat.chatMessages.length).toBe(0);
+
+      const message = {
+        author: player.id,
+        sid: chat._id,
+        body: 'test',
+        dateCreated: new Date(),
+        privateMessage: false,
+        privateMessageRecipientId: undefined,
+      };
+
+      const result = testingTown.updateChatMessageListFromUserInput(chat._id, player.id, message.body, message.dateCreated, message.privateMessage, message.privateMessageRecipientId);
+      expect(result).toBe(true);
+      expect(chat.chatMessages.length).toBe(1);
+      expect(chat.chatMessages[0]).toStrictEqual(message);
+    });
+    it('should emit onChatMessage and onChatUpdated events to listeners if the message was successfully added', async () => {
+      const chat = mock<Chat>();
+      testingTown.chats.push(chat);
+
+      const mockListener = mock<CoveyTownListener>();
+      testingTown.addTownListener(mockListener);
+
+      const message = {
+        author: 'test',
+        sid: chat._id,
+        body: 'test',
+        dateCreated: new Date(),
+        privateMessage: false,
+        privateMessageRecipientId: undefined,
+      };
+
+      const result = testingTown.updateChatMessageListFromUserInput(chat._id, 'test', message.body, message.dateCreated, message.privateMessage, message.privateMessageRecipientId);
+      expect(result).toBe(true);
+      expect(mockListener.onChatMessage).toBeCalledTimes(1);
+      expect(mockListener.onChatMessage).toBeCalledWith(message);
+      expect(mockListener.onChatUpdated).toBeCalledTimes(1);
+      expect(mockListener.onChatUpdated).toBeCalledWith(chat);
     });
   });
 });
