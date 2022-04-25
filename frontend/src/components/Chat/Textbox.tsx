@@ -4,6 +4,7 @@ import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
+import useConversationAreas from '../../hooks/useConversationAreas';
 import { useAppSelector } from '../../redux/reduxHooks';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
