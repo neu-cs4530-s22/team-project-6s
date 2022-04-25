@@ -3,8 +3,10 @@ import { RenderResult , render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
 import { ChakraProvider } from '@chakra-ui/react'
+import { Provider } from 'react-redux'
+import { configureStore } from '@reduxjs/toolkit'
 import { nanoid } from 'nanoid';
-import Textbox from "./Textbox";
+import SenderDropdown from "./SenderDropdown";
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 
@@ -40,7 +42,8 @@ jest.mock("@chakra-ui/react", () => {
 mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
 function wrappedTownChatWindow() {
-  return <ChakraProvider><CoveyAppContext.Provider value={{
+    const reducer = {};
+  return <Provider store={configureStore({reducer})}><ChakraProvider><CoveyAppContext.Provider value={{
     myPlayerID: '',
     currentTownID: '',
     currentTownFriendlyName: '',
@@ -52,10 +55,10 @@ function wrappedTownChatWindow() {
     },
     apiClient: new TownsServiceClient(),
   }}>
-    <Textbox/></CoveyAppContext.Provider></ChakraProvider>;
+    <SenderDropdown/></CoveyAppContext.Provider></ChakraProvider></Provider>;
 }
 
-describe("ChatConversation", () => {
+describe("SenderDropdown", () => {
   let renderedComponent: RenderResult;
 
   beforeEach(() => {
@@ -65,7 +68,7 @@ describe("ChatConversation", () => {
 
   });
 
-  it("Message box is displayed", async () => {
+  it("Menu is displayed", async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseCoveyAppState.currentTownID = nanoid();
@@ -80,11 +83,11 @@ describe("ChatConversation", () => {
     
     renderedComponent = render(wrappedTownChatWindow());
 
-    const box = await renderedComponent.findByTestId("message-box");
-    expect(box).toBeInTheDocument();
+    const dropdown = await renderedComponent.findByTestId("recipient-dropdown");
+    expect(dropdown).toBeInTheDocument();
   });
 
-    it("Send button is displayed", async () => {
+    it("Default option, Everyone, is displayed", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       mockUseCoveyAppState.currentTownID = nanoid();
@@ -99,32 +102,7 @@ describe("ChatConversation", () => {
       
       renderedComponent = render(wrappedTownChatWindow());
 
-      const button = await renderedComponent.findByTestId("send-button");
-      expect(button).toBeInTheDocument();
-    });
-
-    it("Send button makes a call to toast to display success or failure message", async () => {
-      const mockSendMessage = jest.fn();
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownID = nanoid();
-      
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownFriendlyName = true;
-      
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
-      
-      renderedComponent = render(wrappedTownChatWindow());
-
-      const button = await renderedComponent.findByTestId("send-button");
-
-      button.click();
-
-      await waitFor(() => expect(mockToast)
-        .toBeCalled());
+      const everyone = await renderedComponent.findByTestId("default-option");
+      expect(everyone).toBeInTheDocument();
     });
 });

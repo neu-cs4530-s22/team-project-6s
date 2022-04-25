@@ -45,7 +45,7 @@ function wrappedTown() {
     <ChatConversation/></CoveyAppContext.Provider></ChakraProvider>;
 }
 
-describe("ChatWindow", () => {
+describe("ChatConversation", () => {
     let renderedComponent: RenderResult;
 
   it("Chat container is displayed", async () => {

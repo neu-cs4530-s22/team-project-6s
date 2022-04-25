@@ -132,22 +132,18 @@ describe("ChatWindow", () => {
     });
   });
 
-//   it("ChatConversation component is called", async () => {
-//      // @ts-ignore
-//      mockUseCoveyAppState.currentTownID = nanoid();
-//      // @ts-ignore
-//      mockUseCoveyAppState.currentTownFriendlyName = true;
-//      // @ts-ignore
-//      mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
-     
-//      renderedComponent = render(wrappedTownChatWindow());
-
-//      const chatConversation = await renderedComponent.findByTestId("chatconversation");
-     
-//     expect(renderedComponent).toBeInTheDocument();
-
-//     renderedComponent.unmount();
-//   });
+/*   it("ChatConversation component is called", async () => {
+    // @ts-ignore
+    mockUseCoveyAppState.currentTownID = nanoid();
+    // @ts-ignore
+    mockUseCoveyAppState.currentTownFriendlyName = true;
+    // @ts-ignore
+    mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
+    renderedComponent = render(wrappedTownChatWindow());
+    const chatConversation = await renderedComponent.findByTestId("chatconversation");
+    expect(chatConversation).toBeInTheDocument();
+    renderedComponent.unmount();
+   }); */
 
 //   it("TextBox component is called", async () => {
 //      // @ts-ignore
