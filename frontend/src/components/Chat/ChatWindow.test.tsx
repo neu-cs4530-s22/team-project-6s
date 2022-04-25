@@ -4,15 +4,9 @@ import { ChakraProvider } from '@chakra-ui/react'
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
 import { nanoid } from 'nanoid';
-import  userEvent from "@testing-library/user-event";
-import { useSelector , useDispatch } from "react-redux";
-import * as reactRedux from 'react-redux'
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
 import ChatWindow from "./ChatWindow";
-import ChatConversation from "./ChatConversation";
-import Textbox from "./Textbox";
-import { useAppSelector } from '../../redux/reduxHooks'
 
 const useDispatchMock = jest.fn();
 
@@ -51,6 +45,7 @@ jest.mock("@chakra-ui/react", () => {
     useDisclosure: ()=>(mockUseDisclosure),
   };
 })
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
@@ -76,9 +71,7 @@ describe("ChatWindow", () => {
   beforeEach(() => {
 
     mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
-    mockUseAppSelector.mockImplementation((callback) => {
-      return callback(mockUseCoveyAppState);
-    });
+    mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
 
 
     useDispatchMock.mockImplementation(() => useDispatchMock)
@@ -89,12 +82,15 @@ describe("ChatWindow", () => {
 
   describe("Displays title correctly", () => {
     it("Heading is defined", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
         mockUseCoveyAppState.currentTownID = nanoid();
         
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownFriendlyName = true;
         
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
         
@@ -108,10 +104,13 @@ describe("ChatWindow", () => {
     });
 
     it("Tooltip is defined", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownID = nanoid();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownFriendlyName = true;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
         
@@ -123,7 +122,7 @@ describe("ChatWindow", () => {
             fireEvent.mouseOver(tooltip);
         }
         
-        expect(tooltip).toBeDefined;
+        expect(tooltip).toBeDefined();
 
         expect(
             await renderedComponent.findByText("Go near another player to start a chat")

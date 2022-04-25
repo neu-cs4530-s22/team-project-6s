@@ -35,6 +35,7 @@ jest.mock("@chakra-ui/react", () => {
     useDisclosure: ()=>(mockUseDisclosure),
   };
 })
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
@@ -60,41 +61,45 @@ describe("ChatConversation", () => {
   beforeEach(() => {
 
     mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
-    mockUseAppSelector.mockImplementation((callback) => {
-      return callback(mockUseCoveyAppState);
-    });
+    mockUseAppSelector.mockImplementation((callback) => callback(mockUseCoveyAppState));
 
   });
 
   it("Message box is displayed", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       mockUseCoveyAppState.currentTownID = nanoid();
         
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       mockUseCoveyAppState.currentTownFriendlyName = true;
       
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
       
       renderedComponent = render(wrappedTownChatWindow());
 
       const box = await renderedComponent.findByTestId("message-box");
-      expect(box).toBeInTheDocument;
+      expect(box).toBeInTheDocument();
     });
 
     it("Send button is displayed", async () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownID = nanoid();
         
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownFriendlyName = true;
         
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
         
         renderedComponent = render(wrappedTownChatWindow());
 
         const button = await renderedComponent.findByTestId("send-button");
-        expect(button).toBeInTheDocument;
+        expect(button).toBeInTheDocument();
       });
 });

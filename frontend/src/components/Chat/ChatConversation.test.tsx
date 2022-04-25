@@ -4,7 +4,6 @@ import { ChakraProvider } from '@chakra-ui/react'
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
 import { nanoid } from 'nanoid';
-import { TargetElement } from '@testing-library/user-event';
 import ChatConversation from "./ChatConversation";
 import TownsServiceClient from '../../classes/TownsServiceClient';
 import CoveyAppContext from '../../contexts/CoveyAppContext';
@@ -26,6 +25,7 @@ jest.mock("@chakra-ui/react", () => {
     useDisclosure: ()=>(mockUseDisclosure),
   };
 })
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 mockUseCoveyAppState.apiClient = new TownsServiceClient();
 
@@ -49,10 +49,13 @@ describe("ChatWindow", () => {
     let renderedComponent: RenderResult;
 
   it("Chat container is displayed", async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseCoveyAppState.currentTownID = nanoid();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseCoveyAppState.currentTownFriendlyName = true;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
     renderedComponent = render(wrappedTown());

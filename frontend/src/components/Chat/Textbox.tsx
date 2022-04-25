@@ -56,9 +56,9 @@ export default function Textbox(): JSX.Element {
     }
   }
 
-  useEffect(() => {
-    checkIfInChat();
-  }, [nearbyPlayers]);
+    useEffect(() => {
+      checkIfInChat();
+    });
 
   useEffect(() => {
     if(focused){
@@ -100,6 +100,14 @@ export default function Textbox(): JSX.Element {
     }
     return messageToConvert;
   }
+  const configureMessage = async () => {
+    if (recipient === 'Everyone') {
+      await sendMessage(message, new Date(), false, undefined);
+    }
+    else {
+      await sendMessage(message, new Date(), true, recipient);
+    }
+  } 
  
   return (
     <>
@@ -115,8 +123,8 @@ export default function Textbox(): JSX.Element {
               <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await sendMessage(message, new Date(), true, recipient) }}><ChatIcon /></Button>
             }
           </div>
-        </div>
-        <UploadFiles />
+      </div>
+      <UploadFiles />
       </VStack>
     </>
   );
