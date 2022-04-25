@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
-import Player from '../types/Player';
-import CoveyTownController from './CoveyTownController';
+import Player from './Player';
+import CoveyTownController from '../lib/CoveyTownController';
 import { UserLocation } from '../CoveyTypes';
 import * as TestUtils from '../client/TestUtils';
-import Chat, { CHAT_RADIUS } from '../types/Chat';
+import Chat, { CHAT_RADIUS } from './Chat';
 
 describe('isWithin tests', () => {
   let testingTown: CoveyTownController;
