@@ -7,18 +7,25 @@ import useChatsInTown from '../../hooks/useChatsInTown';
 import { ChatMessage } from '../../classes/Chat';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 
-function displayMessage(messageBody: string): JSX.Element {
+function displayMessage(messageBody: string, messageType: string): JSX.Element {
     const potential = localStorage.getItem(messageBody);
     if (potential !== null) {
         return (
             <img
                 src={JSON.parse(potential).file}
                 alt="message"
+                style={{float: messageType === 'sent' ? 'right' : 'left'}}
+                /* flosat={messageType === 'sent' ? 'right' : 'left'} */
             />
         );
     }
     return(
-        <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{ overflow: "auto" }}>
+        messageType === 'sent' ? 
+        <Box as="button" textAlign="right" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{ overflow: "auto" }}>
+            {messageBody}
+        </Box>
+        :
+        <Box as="button" textAlign="left" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{ overflow: "auto" }}>
             {messageBody}
         </Box>
     );
@@ -41,7 +48,7 @@ function SentMessage({ message }: SentMessageProps): JSX.Element {
                     <p>Me &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
                 }
             </Box>
-            {displayMessage(message.body)}
+            {displayMessage(message.body, 'sent')}
         </Box>
     );
 }
@@ -59,7 +66,8 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
   
     if (message.privateMessage) {
         return (
-            recipientId === currentPlayerId ? <Box textAlign="left">
+            recipientId === currentPlayerId ? 
+            <Box textAlign="left">
                 <Box>
                     {message.privateMessage ?
                         <p>{authorPlayer?.userName || 'Sender'}<span style={{ color: 'red' }}> to Me</span> &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
@@ -67,7 +75,7 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
                         <></>
                     }
                 </Box>
-                {displayMessage(message.body)}
+                {displayMessage(message.body, 'received')}
             </Box>
                 : <></>
         )
@@ -77,7 +85,7 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
             <Box>
                 <p>{authorPlayer?.userName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
-            {displayMessage(message.body)}
+            {displayMessage(message.body, 'received')}
         </Box>
     );
 }
