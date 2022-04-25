@@ -4,7 +4,8 @@ import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
-import { useAppSelector } from '../../redux/reduxHooks'
+import { useAppSelector } from '../../redux/reduxHooks';
+import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 export default function Textbox(): JSX.Element {
   const [message, setMessage] = useState<string | File>('');
@@ -14,7 +15,10 @@ export default function Textbox(): JSX.Element {
   const players = usePlayersInTown();
   const myPlayer = players.find((player) => player.id === myPlayerID);
   const recipient = useAppSelector((state) => state.recipient.recipient)
-  // const dispatch = useAppDispatch()
+  const video = useMaybeVideo()
+  const [focused, setFocused] = React.useState(false);
+  const onFocus = () => setFocused(true);
+  const onBlur = () => setFocused(false);
 
   const sendMessage = async (messageBody: string | File, date: Date, privateMessage: boolean, privateMessageRecipientId?: string) => {
     try {
@@ -56,8 +60,15 @@ export default function Textbox(): JSX.Element {
     checkIfInChat();
   }, [nearbyPlayers]);
 
+  useEffect(() => {
+    if(focused){
+      video?.pauseGame();
+    }else{
+      video?.unPauseGame();
+    }
+  }, [focused, video]);
+
   function UploadFiles(): JSX.Element {
-    // const [file, setFile] = useState<File>();
 
     return (
       <>
@@ -89,13 +100,13 @@ export default function Textbox(): JSX.Element {
     }
     return messageToConvert;
   }
-
+ 
   return (
     <>
       <VStack>
         <div>
           <div style={{ float: 'left' }}>
-            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => { setMessage(e.target.value) }} onKeyPress={async (e) => { if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) } }} />
+            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} />
           </div>
           <div style={{ overflow: 'hidden' }}>
             {recipient === 'Everyone' ?
