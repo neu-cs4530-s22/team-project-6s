@@ -8,7 +8,7 @@ import { useAppSelector } from '../../redux/reduxHooks';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 export default function Textbox(): JSX.Element {
-  const [message, setMessage] = useState<string | File>('');
+  const [message, setMessage] = useState<string>('');
   const [inChat, setInChat] = useState(false);
   const { apiClient, sessionToken, currentTownID, myPlayerID } = useCoveyAppState();
   const toast = useToast();
@@ -20,7 +20,7 @@ export default function Textbox(): JSX.Element {
   const onFocus = () => setFocused(true);
   const onBlur = () => setFocused(false);
 
-  const sendMessage = async (messageBody: string | File, date: Date, privateMessage: boolean, privateMessageRecipientId?: string) => {
+  const sendMessage = async (messageBody: string, date: Date, privateMessage: boolean, privateMessageRecipientId?: string) => {
     try {
       await apiClient.updateChat({
         coveyTownID: currentTownID,
@@ -56,14 +56,14 @@ export default function Textbox(): JSX.Element {
     }
   }
 
-    useEffect(() => {
-      checkIfInChat();
-    });
+  useEffect(() => {
+    checkIfInChat();
+  });
 
   useEffect(() => {
-    if(focused){
+    if (focused) {
       video?.pauseGame();
-    }else{
+    } else {
       video?.unPauseGame();
     }
   }, [focused, video]);
@@ -72,10 +72,11 @@ export default function Textbox(): JSX.Element {
 
     return (
       <>
-        <Button data-testid="upload-button" style={{ float: 'left' }} size='lg'>
-          Upload Files
+        <Button data-testid="upload-button" style={{ float: 'left' }} size='lg' isDisabled={!inChat}>
+          Upload Image
           <Input
             type="file"
+            accept="image/*"
             height="100%"
             width="100%"
             position="absolute"
@@ -85,21 +86,21 @@ export default function Textbox(): JSX.Element {
             aria-hidden="true"
             onChange={(e) => {
               if (e.target !== null && e.target.files !== null) {
-                setMessage(e.target.files[0]);
+                const file = e.target.files[0];
+                setMessage(file.name);
+                const storeFile = {
+                  file: URL.createObjectURL(file)
+                };
+                localStorage.setItem(file.name, JSON.stringify(storeFile));
               }
-            }}
+            }
+          }
           />
         </Button>
       </>
     )
   }
 
-  function messageToString(messageToConvert: string | File): string {
-    if (messageToConvert instanceof File) {
-      return messageToConvert.name;
-    }
-    return messageToConvert;
-  }
   const configureMessage = async () => {
     if (recipient === 'Everyone') {
       await sendMessage(message, new Date(), false, undefined);
@@ -107,20 +108,20 @@ export default function Textbox(): JSX.Element {
     else {
       await sendMessage(message, new Date(), true, recipient);
     }
-  } 
- 
+  }
+
   return (
     <>
       <VStack>
         <div>
           <div style={{ float: 'left' }}>
-            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} />
+            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} onKeyPress={async (e) => { if (e.key === "Enter") { await configureMessage() } }} />
           </div>
           <div style={{ overflow: 'hidden' }}>
-              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
+            <Button data-testid="send-button" isDisabled={!inChat} style={{ float: 'left' }} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
           </div>
-      </div>
-      <UploadFiles />
+        </div>
+        <UploadFiles />
       </VStack>
     </>
   );

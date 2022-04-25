@@ -7,13 +7,30 @@ import useChatsInTown from '../../hooks/useChatsInTown';
 import { ChatMessage } from '../../classes/Chat';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 
+function displayMessage(messageBody: string): JSX.Element {
+    const potential = localStorage.getItem(messageBody);
+    if (potential !== null) {
+        return (
+            <img
+                src={JSON.parse(potential).file}
+                alt="message"
+            />
+        );
+    }
+    return(
+        <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{ overflow: "auto" }}>
+            {messageBody}
+        </Box>
+    );
+}
+
 type SentMessageProps = {
     message: ChatMessage
 }
 function SentMessage({ message }: SentMessageProps): JSX.Element {
     const date = message.dateCreated;
     const recipientId = message.privateMessageRecipientId;
-    const recipient = usePlayersInTown().find((player) => player.id === recipientId)?.userName
+    const recipient = usePlayersInTown().find((player) => player.id === recipientId)?.userName;
 
     return (
         <Box textAlign="right">
@@ -24,9 +41,7 @@ function SentMessage({ message }: SentMessageProps): JSX.Element {
                     <p>Me &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
                 }
             </Box>
-            <Box as="button" borderRadius='md' bg='#63B3ED' px={4} h={10} color='white' style={{ overflow: "auto" }}>
-                {message.body}
-            </Box>
+            {displayMessage(message.body)}
         </Box>
     );
 }
@@ -52,9 +67,7 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
                         <></>
                     }
                 </Box>
-                <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{ overflow: "auto" }}>
-                    {message.body}
-                </Box>
+                {displayMessage(message.body)}
             </Box>
                 : <></>
         )
@@ -64,9 +77,7 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
             <Box>
                 <p>{authorPlayer?.userName || 'Sender'} &emsp; <i>{(date instanceof Date) ? date.toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' }) : new Date(date).toLocaleTimeString('en-us', { hour: 'numeric', minute: 'numeric' })}</i></p>
             </Box>
-            <Box as="button" borderRadius='md' bg='#EDF2F7' px={4} h={10} color='black' style={{ overflow: "auto" }}>
-                {message.body}
-            </Box>
+            {displayMessage(message.body)}
         </Box>
     );
 }

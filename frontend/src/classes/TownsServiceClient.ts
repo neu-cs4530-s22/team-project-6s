@@ -97,7 +97,7 @@ export interface ConversationCreateRequest {
   chatID?: string;
   sessionToken: string;
   sendingPlayerID: string;
-  body: string | File;
+  body: string;
   dateCreated: Date;
   privateMessage: boolean;
   privateMessageRecipientId?: string;
