@@ -59,7 +59,6 @@ export default function Textbox(): JSX.Element {
         setInChat(false)
       }
     }
-  }
 
     useEffect(() => {
       checkIfInChat();
