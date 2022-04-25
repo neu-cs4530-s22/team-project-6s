@@ -4,12 +4,8 @@ import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
-<<<<<<< HEAD
-=======
 import useConversationAreas from '../../hooks/useConversationAreas';
->>>>>>> 6b889e58068c21daf7db82e3517f923db216dc25
 import { useAppSelector } from '../../redux/reduxHooks';
-import useConversationAreas from '../../hooks/useConversationAreas';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 export default function Textbox(): JSX.Element {
@@ -19,15 +15,9 @@ export default function Textbox(): JSX.Element {
   const toast = useToast();
   const players = usePlayersInTown();
   const myPlayer = players.find((player) => player.id === myPlayerID);
-<<<<<<< HEAD
-  const recipient = useAppSelector((state) => state.recipient.recipient)
-  const convoAreas = useConversationAreas();
-  const video = useMaybeVideo()
-=======
   const recipient = useAppSelector((state) => state.recipient.recipient);
   const convoAreas = useConversationAreas();
   const video = useMaybeVideo();
->>>>>>> 6b889e58068c21daf7db82e3517f923db216dc25
   const [focused, setFocused] = React.useState(false);
   const onFocus = () => setFocused(true);
   const onBlur = () => setFocused(false);
