@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
-import { ChatLocation, UserLocation } from '../CoveyTypes';
+import { ChatLocation, ChatMessage, UserLocation } from '../CoveyTypes';
 
 
 export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _activeChatID: string };
