@@ -9,33 +9,26 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import { useAppSelector } from '../../redux/reduxHooks'
 import { setRecipient } from '../../redux/slice'
 
-  export default function SenderDropdown() : JSX.Element{
-      const {myPlayerID} = useCoveyAppState();
-      const players = usePlayersInTown();
-      const myPlayer = players.find((player) => player.id === myPlayerID);
-      const initChats = useChatsInTown();
-      const curChat = initChats.find((chat) => chat._id === myPlayer?._activeChatID);
-      const dispatch = useDispatch()
-      // const occupantIDsInChat = useNearbyPlayers()
+export default function SenderDropdown(): JSX.Element {
+  const { myPlayerID } = useCoveyAppState();
+  const players = usePlayersInTown();
+  const myPlayer = players.find((player) => player.id === myPlayerID);
+  const dispatch = useDispatch()
+  
+  const occupantsAsPlayers = useNearbyPlayers()
+  const occupantsAsPlayersMinusMe = occupantsAsPlayers?.filter((player) => player !== myPlayer)
+  const [recipientName, setRecipientName] = useState('Everyone')
+  const [recipient, setRecipientID] = useState('Everyone')
 
 
-      // const occupantsAsPlayers = occupantIDsInChat?.map((id)=>
-      // players.find((player) => player.id === id))
-      const occupantsAsPlayers = useNearbyPlayers()
-      const occupantsAsPlayersMinusMe = occupantsAsPlayers?.filter((player) => player !== myPlayer)
-      const [recipientName, setRecipientName] = useState('Everyone')
-      const [recipientID, setRecipientID] = useState('Everyone')
+  const nearbyPlayers = useNearbyPlayers();
+  const [inChat, setInChat] = useState(false);
 
-
-      const nearbyPlayers = useNearbyPlayers();
-      const [inChat, setInChat] = useState(false);
-
-    function checkIfInChat() {
-      if (nearbyPlayers.length > 0) {
-        setInChat(true)
-      } else {
-        setInChat(false)
-      }
+  function checkIfInChat() {
+    if (nearbyPlayers.length > 0) {
+      setInChat(true)
+    } else {
+      setInChat(false)
     }
   }
 

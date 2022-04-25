@@ -63,7 +63,7 @@ export default function Textbox(): JSX.Element {
 
     useEffect(() => {
       checkIfInChat();
-    }, [nearbyPlayers, convoAreas]);
+    });
 
   function UploadFiles(): JSX.Element {
     // const [file, setFile] = useState<File>();
@@ -99,27 +99,24 @@ export default function Textbox(): JSX.Element {
     return messageToConvert;
   }
 
-  return (
-    <>
+    const configureMessage = async () => {
+      if (recipient === 'Everyone') {
+        await sendMessage(message, new Date(), false, undefined);
+      }
+      else {
+        await sendMessage(message, new Date(), true, recipient);
+      }
+    } 
+
+    return (
+      <>
       <VStack>
-        <div>
-          <div style={{ float: 'left' }}>
-            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => { setMessage(e.target.value) }} onKeyPress={async (e) => { if (e.key === "Enter") { await sendMessage(message, new Date(), false, undefined) } }} />
-          </div>
-          <div style={{ overflow: 'hidden' }}>
-            {recipient === 'Everyone' ?
-              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined) }}><ChatIcon /></Button>
-              :
-              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await sendMessage(message, new Date(), true, recipient) }}><ChatIcon /></Button>
-            }
-          </div>
+      <div>
+        <div style={{float: 'left'}}>
+          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await configureMessage() }}}/>
         </div>
         <div style={{overflow: 'hidden'}}>
-          {recipient === 'Everyone' ?
-          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined)}}><ChatIcon /></Button>
-          :
-          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await sendMessage(message, new Date(), true, recipient)}}><ChatIcon /></Button>
-          }
+          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
         </div>
       </div>
       <UploadFiles />
