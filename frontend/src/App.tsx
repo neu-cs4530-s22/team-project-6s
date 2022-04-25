@@ -227,8 +227,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
       socket.on('chatUpdated', (chat: Chat) => {
         // console.log(chat);
         // if chat is updated replace the entry, if newly created add it
-        if (localChats.find((c) => c === chat)) {
-          localChats = localChats.filter((c) => c === chat);
+        if (localChats.find((c) => c._id === chat._id)) {
+          localChats = localChats.filter((c) => c._id !== chat._id);
           localChats = localChats.concat(chat);
           setChatsInTown(localChats);
         } else {
@@ -237,9 +237,8 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         }
       });
       socket.on('chatDestroyed', (chat: Chat) => {
-        localChats = localChats.filter((c) => c === chat);
+        localChats = localChats.filter((c) => c._id !== chat._id);
         setChatsInTown(localChats);
-        // console.log(chat);
       });
       socket.on('chatMessage', (chatMessage: ChatMessage) => {
         // find the chat that corresponds to this chat message
@@ -248,7 +247,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
           if (!chat.chatMessages) {
             chat.chatMessages = [];
           }
-          localChats = localChats.filter((c) => c === chat);
+          localChats = localChats.filter((c) => c._id !== chat._id);
           chat.chatMessages.push(chatMessage);
           localChats = localChats.concat(chat);
           setChatsInTown(localChats);

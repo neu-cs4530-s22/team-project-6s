@@ -56,7 +56,7 @@ function ReceivedMessage({ message, author, currentPlayerId }: ReceivedMessagePr
     const authorPlayer = players.find((player) => player.id === author);
     const date = message.dateCreated;
     const recipientId = message.privateMessageRecipientId;
-
+  
     if (message.privateMessage) {
         return (
             recipientId === currentPlayerId ? <Box textAlign="left">
@@ -102,15 +102,15 @@ export default function ChatConversation(): JSX.Element {
 
     useEffect(() => {
         checkIfInChat();
-    }, [nearbyPlayers]);
+      });
 
     return (
-        <div data-testid="container" style={{ overflow: "scroll", flex: "auto" }}>
-            <Stack>
-                {chat && chat.chatMessages && inChat ? chat.chatMessages.map((message) =>
-                    message.author === myPlayer?.id ? <SentMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} />
-                        : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} author={message.author} currentPlayerId={myPlayerID} />) : <></>}
-            </Stack>
-        </div>
+      <div data-testid="container" style={{overflow: "scroll", flex: "auto"}}>
+          <Stack>
+          {chats && chat && chat.chatMessages && inChat ? chat.chatMessages.map((message) => 
+          message.author === myPlayer?.id ? <SentMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} /> 
+          : <ReceivedMessage key={`by ${message.author} with messageID ${nanoid()}`} message={message} author={message.author} currentPlayerId={myPlayerID}/>) : <></>}
+          </Stack>
+      </div>
     );
 }
