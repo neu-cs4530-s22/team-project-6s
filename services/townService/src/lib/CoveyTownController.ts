@@ -266,13 +266,11 @@ export default class CoveyTownController {
 
   /**
    * Creates a new chat conversation in this town if there are two or more players that are close to each other
-   *
+   * 
    * Adds any players who are in the region defined by the chat conversation to it.
-   *
+   * 
    * Notifies any CoveyTownListeners that a chat conversation has been created
-   *
-   * @param anchorPlayer Information describing the player that moved and could become an anchor player.
-   *
+   * @param _anchorPlayer Information describing the player that moved and could become an anchor player.
    * @returns true if the chat conversation is successfully created, or false if not
    */
   addChat(_anchorPlayer: Player): boolean {
@@ -294,41 +292,19 @@ export default class CoveyTownController {
       this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(_anchorPlayer));
       this._listeners.forEach(listener => listener.onChatUpdated(newChat));
     }
-    // POSSIBLE LISTENER NEEDED HERE LATER
+    
     return true;
   }
 
   /**
-   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
-   * 
-   * @param chat the chat that recieved a new message 
-   * @param sendingPlayer the player who sent the chat
+   * Takes input from the frontend and turns it into ChatMessage and adds it to corresponding chat
+   * @param chatID the chat that recieved a new message
+   * @param sendingPlayerID the player who sent the chat
    * @param body the content of the chat
-   * @param dateCreated when the chat was sent 
+   * @param dateCreated when the chat was sent
    * @param privateMessage if the chat was a private message
-   * @param privateMessageRecipientId who the private message was sent to 
-   */
-  /* createChatMessageFromUserInput(chat: Chat, sendingPlayer: Player, body: string, dateCreated: Date, 
-    privateMessage: Boolean, privateMessageRecipientId: string|undefined ): void {
-      const message = {author :  sendingPlayer.id,
-        sid: nanoid(),
-        body: body,
-        dateCreated: dateCreated,
-        privateMessage: privateMessage,
-        privateMessageRecipientId: privateMessageRecipientId }
-
-        chat.addChatMessage(message);
-  } */
-
-  /**
-   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
-   * 
-   * @param chat the chat that recieved a new message 
-   * @param sendingPlayer the player who sent the chat
-   * @param body the content of the chat
-   * @param dateCreated when the chat was sent 
-   * @param privateMessage if the chat was a private message
-   * @param privateMessageRecipientId who the private message was sent to 
+   * @param privateMessageRecipientId who the private message was sent to
+   * @returns true if the chat message was successfully added to the chat's list of messages, or false if not
    */
   updateChatMessageListFromUserInput(chatID: string, sendingPlayerID: string, body: string | File, dateCreated: Date,
     privateMessage: boolean, privateMessageRecipientId: string | undefined): boolean {
@@ -390,13 +366,14 @@ export default class CoveyTownController {
     this._listeners = this._listeners.filter(v => v !== listener);
   }
 
+  /**
+   * Sends an onChatMessage event to any listeners with the given message.
+   *
+   * @param message the message that was sent
+   */
   onChatMessage(message: ChatMessage): void {
     this._listeners.forEach(listener => listener.onChatMessage(message));
   }
-
-  /*   onChatCreate(chat: Chat): void {
-      this._listeners.forEach(listener => listener.onChatCreate(chat));
-    } */
 
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the

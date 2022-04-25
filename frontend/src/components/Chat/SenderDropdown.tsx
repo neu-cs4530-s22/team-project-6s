@@ -37,16 +37,16 @@ export default function SenderDropdown() : JSX.Element{
   }
 
   return (
-      <Menu size="sm" closeOnSelect>
-        <MenuButton /* isDisabled={!inChat} */>
-          {`Send to: ${recipientName}`}
-        </MenuButton>
-        <MenuList minWidth='240px'>
-          <MenuOptionGroup defaultValue='Everyone'type='radio' >
-            <MenuItemOption value='Everyone' onClick={() => privateFunctionality(undefined)} isDisabled={!inChat}> Everyone </MenuItemOption>
-            <MenuDivider/>
-            {occupantsAsPlayersMinusMe?.map((player) => (
-            <MenuItemOption key={nanoid()} isDisabled={!inChat} value={player?.id} onClick={() => privateFunctionality(player)}> 
+    <Menu size="sm" closeOnSelect>
+      <MenuButton /* isDisabled={!inChat} */>
+        {`Send to: ${recipientName}`}
+      </MenuButton>
+      <MenuList data-testid="recipient-dropdown" minWidth='240px'>
+        <MenuOptionGroup defaultValue='Everyone' type='radio' >
+          <MenuItemOption data-testid="default-option" value='Everyone' onClick={() => privateFunctionality(undefined)} isDisabled={!inChat}> Everyone </MenuItemOption>
+          <MenuDivider />
+          {occupantsAsPlayersMinusMe?.map((player) => (
+            <MenuItemOption key={nanoid()} isDisabled={!inChat} value={player?.id} onClick={() => privateFunctionality(player)}>
               {player?.userName}
             </MenuItemOption>
           ))}

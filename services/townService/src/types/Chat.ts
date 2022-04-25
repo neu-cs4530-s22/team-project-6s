@@ -5,17 +5,20 @@ import Player from './Player';
 export const CHAT_RADIUS = 80;
 
 /**
- * Each chat that connected to a town is represented by a Chat object
+ * Each chat that is connected to a town is represented by a Chat object. Represents a spatial chat
+ * created when two players are close to each other.
  */
 export default class Chat {
-  /**  * */
+  /** The location of this chat on the map, including the chat radius * */
   public location: ChatLocation;
   
   /** The unique identifier for this chat * */
   public readonly _id: string;
 
+  /** The players in this chat, identified by ID */
   public occupantsByID: string[];
 
+  /** The chat messages that are currently stored in this chat */
   public chatMessages: ChatMessage[];
   
   constructor(anchorPlayer: Player) {
@@ -33,14 +36,9 @@ export default class Chat {
   /**
      * Appends a new message to this chat's stored lists of messages 
      * 
-     * @param message new message 
+     * @param message new message to be added to this chat
      */
   addChatMessage(message: ChatMessage): void {
     this.chatMessages.push(message);
   }
-
-
-
-
-
 }
