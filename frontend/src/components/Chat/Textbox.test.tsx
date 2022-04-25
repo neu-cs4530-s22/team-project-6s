@@ -102,29 +102,4 @@ describe("ChatConversation", () => {
       const button = await renderedComponent.findByTestId("send-button");
       expect(button).toBeInTheDocument();
     });
-
-    it("Send button makes a call to toast to display success or failure message", async () => {
-      const mockSendMessage = jest.fn();
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownID = nanoid();
-      
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownFriendlyName = true;
-      
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockUseCoveyAppState.currentTownIsPubliclyListed = nanoid();
-      
-      renderedComponent = render(wrappedTownChatWindow());
-
-      const button = await renderedComponent.findByTestId("send-button");
-
-      button.click();
-
-      await waitFor(() => expect(mockToast)
-        .toBeCalled());
-    });
 });
