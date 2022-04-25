@@ -4,6 +4,7 @@ import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
+import useConversationAreas from '../../hooks/useConversationAreas';
 import { useAppSelector } from '../../redux/reduxHooks';
 import useMaybeVideo from '../../hooks/useMaybeVideo';
 
@@ -14,8 +15,9 @@ export default function Textbox(): JSX.Element {
   const toast = useToast();
   const players = usePlayersInTown();
   const myPlayer = players.find((player) => player.id === myPlayerID);
-  const recipient = useAppSelector((state) => state.recipient.recipient)
-  const video = useMaybeVideo()
+  const recipient = useAppSelector((state) => state.recipient.recipient);
+  const convoAreas = useConversationAreas();
+  const video = useMaybeVideo();
   const [focused, setFocused] = React.useState(false);
   const onFocus = () => setFocused(true);
   const onBlur = () => setFocused(false);
@@ -48,17 +50,23 @@ export default function Textbox(): JSX.Element {
 
   const nearbyPlayers = useNearbyPlayers();
 
-  function checkIfInChat() {
-    if (nearbyPlayers.length > 0) {
-      setInChat(true)
-    } else {
-      setInChat(false)
+    function checkIfInConvoArea() {
+      const caWithMyPlayerAsOccupant = convoAreas.filter((ca) => ca.occupants.includes(myPlayerID));
+      console.log(caWithMyPlayerAsOccupant);
+      return caWithMyPlayerAsOccupant;
     }
-  }
 
-  useEffect(() => {
-    checkIfInChat();
-  });
+    function checkIfInChat() {
+      if (nearbyPlayers.length > 0 && checkIfInConvoArea().length === 0) {
+        setInChat(true)
+      } else {
+        setInChat(false)
+      }
+    }
+
+    useEffect(() => {
+      checkIfInChat();
+    });
 
   useEffect(() => {
     if (focused) {

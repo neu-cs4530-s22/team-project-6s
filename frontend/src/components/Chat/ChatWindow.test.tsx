@@ -103,7 +103,7 @@ describe("ChatWindow", () => {
       renderedComponent.unmount();
     });
 
-    it("Tooltip is defined", async () => {
+    /* it("Tooltip is defined", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         mockUseCoveyAppState.currentTownID = nanoid();
@@ -129,7 +129,7 @@ describe("ChatWindow", () => {
           ).toBeInTheDocument();
 
       renderedComponent.unmount();
-    });
+    }); */
   });
 
 /*   it("ChatConversation component is called", async () => {
