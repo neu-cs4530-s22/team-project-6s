@@ -83,9 +83,9 @@ export default function SenderDropdown(): JSX.Element {
       <MenuButton /* isDisabled={!inChat} */>
         {`Send to: ${recipientName}`}
       </MenuButton>
-      <MenuList minWidth='240px'>
+      <MenuList data-testid="recipient-dropdown" minWidth='240px'>
         <MenuOptionGroup defaultValue='Everyone' type='radio' >
-          <MenuItemOption value='Everyone' onClick={() => privateFunctionality(undefined)} isDisabled={!inChat}> Everyone </MenuItemOption>
+          <MenuItemOption data-testid="default-option" value='Everyone' onClick={() => privateFunctionality(undefined)} isDisabled={!inChat}> Everyone </MenuItemOption>
           <MenuDivider />
           {occupantsAsPlayersMinusMe?.map((player) => (
             <MenuItemOption key={nanoid()} isDisabled={!inChat} value={player?.id} onClick={() => privateFunctionality(player)}>
