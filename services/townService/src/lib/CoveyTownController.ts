@@ -165,7 +165,7 @@ export default class CoveyTownController {
     if (!player.activeConversationArea) {
       const activeChat = this.chats.find((c) => c._id === player.activeChatID);
       // check if player has moved outside of chat 
-      if (activeChat && !player.isWithinChat(activeChat.location)){
+      if (activeChat && !player.isWithinChat(activeChat.location)) {
         this.removePlayerFromChat(player, activeChat);
       }
       // check if player's new location is within an existing chat & add them
@@ -181,7 +181,7 @@ export default class CoveyTownController {
         }
       }
 
-      if (!player.activeChatID){
+      if (!player.activeChatID) {
         this.addChat(player);
       }
     }
@@ -198,8 +198,8 @@ export default class CoveyTownController {
    * @param player Player to remove from conversation area
    * @param conversation Conversation area to remove player from
    */
-  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea) : void {
-    conversation.occupantsByID.splice(conversation.occupantsByID.findIndex(p=>p === player.id), 1);
+  removePlayerFromConversationArea(player: Player, conversation: ServerConversationArea): void {
+    conversation.occupantsByID.splice(conversation.occupantsByID.findIndex(p => p === player.id), 1);
     if (conversation.occupantsByID.length === 0) {
       this._conversationAreas.splice(this._conversationAreas.findIndex(conv => conv === conversation), 1);
       this._listeners.forEach(listener => listener.onConversationAreaDestroyed(conversation));
@@ -217,15 +217,15 @@ export default class CoveyTownController {
    * @param player Player to remove from chat
    * @param chat Chat to remove player from
    */
-  removePlayerFromChat(player: Player, chat: Chat) : void {
-    chat.occupantsByID.splice(chat.occupantsByID.findIndex(p=>p === player.id), 1);
+  removePlayerFromChat(player: Player, chat: Chat): void {
+    chat.occupantsByID.splice(chat.occupantsByID.findIndex(p => p === player.id), 1);
 
     // destroy chat if there is only one player left in it
     if (chat.occupantsByID.length === 1) {
       this._chats.splice(this._chats.findIndex(ch => ch === chat), 1);
-      this._players.forEach((p) => {if (p.activeChatID === chat._id) {p.activeChatID = undefined;}});
+      this._players.forEach(p => { if (p.activeChatID === chat._id) { p.activeChatID = undefined; } });
       this._listeners.forEach(listener => listener.onChatDestroyed(chat));
-    } 
+    }
     player.activeChatID = undefined;
     this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player));
   }
@@ -248,17 +248,17 @@ export default class CoveyTownController {
       eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
     ))
       return false;
-    if (_conversationArea.topic === ''){
+    if (_conversationArea.topic === '') {
       return false;
     }
-    if (this._conversationAreas.find(eachExistingConversation => 
-      CoveyTownController.boxesOverlap(eachExistingConversation.boundingBox, _conversationArea.boundingBox)) !== undefined){
+    if (this._conversationAreas.find(eachExistingConversation =>
+      CoveyTownController.boxesOverlap(eachExistingConversation.boundingBox, _conversationArea.boundingBox)) !== undefined) {
       return false;
     }
-    const newArea :ServerConversationArea = Object.assign(_conversationArea);
+    const newArea: ServerConversationArea = Object.assign(_conversationArea);
     this._conversationAreas.push(newArea);
     const playersInThisConversation = this.players.filter(player => player.isWithin(newArea));
-    playersInThisConversation.forEach(player => {player.activeConversationArea = newArea;});
+    playersInThisConversation.forEach(player => { player.activeConversationArea = newArea; });
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
     return true;
@@ -266,13 +266,11 @@ export default class CoveyTownController {
 
   /**
    * Creates a new chat conversation in this town if there are two or more players that are close to each other
-   *
+   * 
    * Adds any players who are in the region defined by the chat conversation to it.
-   *
+   * 
    * Notifies any CoveyTownListeners that a chat conversation has been created
-   *
-   * @param anchorPlayer Information describing the player that moved and could become an anchor player.
-   *
+   * @param _anchorPlayer Information describing the player that moved and could become an anchor player.
    * @returns true if the chat conversation is successfully created, or false if not
    */
   addChat(_anchorPlayer: Player): boolean {
@@ -281,13 +279,12 @@ export default class CoveyTownController {
     playersAroundAnchorPlayer = playersAroundAnchorPlayer.filter((player) => player.activeChatID === undefined);
 
     if (playersAroundAnchorPlayer.length === 0) {
-      return false; 
+      return false;
     }
     {
-      const newChat :Chat = new Chat(_anchorPlayer);
+      const newChat: Chat = new Chat(_anchorPlayer);
       // if its active chat is not defined, set it to the new chat 
-      // eslint-disable-next-line
-      playersAroundAnchorPlayer.forEach((player) => player.activeChatID = newChat._id);
+      playersAroundAnchorPlayer.forEach(player => { player.activeChatID = newChat._id; });
       playersAroundAnchorPlayer.forEach(player => this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(player)));
       playersAroundAnchorPlayer.map((player) => newChat.occupantsByID.push(player.id));
       this._chats.push(newChat);
@@ -295,60 +292,40 @@ export default class CoveyTownController {
       this._listeners.forEach(listener => listener.onPlayerActiveChatUpdated(_anchorPlayer));
       this._listeners.forEach(listener => listener.onChatUpdated(newChat));
     }
-    // POSSIBLE LISTENER NEEDED HERE LATER
+    
     return true;
   }
 
   /**
-   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
-   * 
-   * @param chat the chat that recieved a new message 
-   * @param sendingPlayer the player who sent the chat
+   * Takes input from the frontend and turns it into ChatMessage and adds it to corresponding chat
+   * @param chatID the chat that recieved a new message
+   * @param sendingPlayerID the player who sent the chat
    * @param body the content of the chat
-   * @param dateCreated when the chat was sent 
+   * @param dateCreated when the chat was sent
    * @param privateMessage if the chat was a private message
-   * @param privateMessageRecipientId who the private message was sent to 
+   * @param privateMessageRecipientId who the private message was sent to
+   * @returns true if the chat message was successfully added to the chat's list of messages, or false if not
    */
-  /* createChatMessageFromUserInput(chat: Chat, sendingPlayer: Player, body: string, dateCreated: Date, 
-    privateMessage: Boolean, privateMessageRecipientId: string|undefined ): void {
-      const message = {author :  sendingPlayer.id,
-        sid: nanoid(),
-        body: body,
-        dateCreated: dateCreated,
-        privateMessage: privateMessage,
-        privateMessageRecipientId: privateMessageRecipientId }
+  updateChatMessageListFromUserInput(chatID: string, sendingPlayerID: string, body: string, dateCreated: Date,
+    privateMessage: boolean, privateMessageRecipientId: string | undefined): boolean {
 
-        chat.addChatMessage(message);
-  } */
+    const chat = this._chats.find((c) => c._id === chatID);
 
-  /**
-   * Takes input from the frontend and turns it into chatMessage and adds it to corresponding chat
-   * 
-   * @param chat the chat that recieved a new message 
-   * @param sendingPlayer the player who sent the chat
-   * @param body the content of the chat
-   * @param dateCreated when the chat was sent 
-   * @param privateMessage if the chat was a private message
-   * @param privateMessageRecipientId who the private message was sent to 
-   */
-  updateChatMessageListFromUserInput(chatID: string, sendingPlayerID: string, body: string | File, dateCreated: Date, 
-    privateMessage: boolean, privateMessageRecipientId: string | undefined ): boolean {
-
-    const currentChat = this._chats.find((chat) => chat._id === chatID); 
-
-    if (!currentChat) {
+    if (!chat) {
       return false;
     }
-    const message = { author :  sendingPlayerID,
-      sid: currentChat._id,
+    const message = {
+      author: sendingPlayerID,
+      sid: chat._id,
       body,
       dateCreated,
       privateMessage,
-      privateMessageRecipientId };
+      privateMessageRecipientId,
+    };
 
-    currentChat.addChatMessage(message);
+    chat.addChatMessage(message);
     this._listeners.forEach(listener => listener.onChatMessage(message));
-    this._listeners.forEach(listener => listener.onChatUpdated(currentChat));
+    this._listeners.forEach(listener => listener.onChatUpdated(chat));
 
     return true;
   }
@@ -360,7 +337,7 @@ export default class CoveyTownController {
    * @param box2 
    * @returns true if the boxes overlap, otherwise false
    */
-  static boxesOverlap(box1: BoundingBox, box2: BoundingBox):boolean{
+  static boxesOverlap(box1: BoundingBox, box2: BoundingBox): boolean {
     // Helper function to extract the top left (x1,y1) and bottom right corner (x2,y2) of each bounding box
     const toRectPoints = (box: BoundingBox) => ({ x1: box.x - box.width / 2, x2: box.x + box.width / 2, y1: box.y - box.height / 2, y2: box.y + box.height / 2 });
     const rect1 = toRectPoints(box1);
@@ -389,13 +366,14 @@ export default class CoveyTownController {
     this._listeners = this._listeners.filter(v => v !== listener);
   }
 
+  /**
+   * Sends an onChatMessage event to any listeners with the given message.
+   *
+   * @param message the message that was sent
+   */
   onChatMessage(message: ChatMessage): void {
     this._listeners.forEach(listener => listener.onChatMessage(message));
   }
-
-  /*   onChatCreate(chat: Chat): void {
-    this._listeners.forEach(listener => listener.onChatCreate(chat));
-  } */
 
   /**
    * Fetch a player's session based on the provided session token. Returns undefined if the

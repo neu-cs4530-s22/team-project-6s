@@ -2,8 +2,6 @@ import { nanoid } from 'nanoid';
 import { ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation, ChatLocation } from '../CoveyTypes';
 
-// import Chat, { CHAT_RADIUS } from './Chat';
-
 /**
  * Each user who is connected to a town is represented by a Player object
  */
@@ -63,8 +61,8 @@ export default class Player {
    * 
    * This method is resilient to floating point errors that could arise if any of the coordinates of
    * `this.location` are dramatically smaller than those of the conversation area's bounding box.
-   * @param conversation 
-   * @returns 
+   * @param conversation the given conversation area
+   * @returns true if the player is in the conversation area, or false if not
    */
   isWithin(conversation: ServerConversationArea): boolean {
     return (
@@ -94,8 +92,8 @@ export default class Player {
    * 
    * This method is resilient to floating point errors that could arise if any of the coordinates of
    * `this.location` are dramatically smaller than those of the conversation area's bounding box.
-   * @param conversation 
-   * @returns 
+   * @param chatLocation the location of the chat which we are checking against the player's location
+   * @returns true if the player is within the chat, and false if not
    */
   isWithinChat(chatLocation: ChatLocation): boolean {
     return (

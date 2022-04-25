@@ -11,7 +11,7 @@ export type CoveyTownList = { friendlyName: string; coveyTownID: string; current
 export type ChatMessage = {
   author: string;
   sid: string;
-  body: string | File;
+  body: string;
   dateCreated: Date;
   privateMessage: boolean;
   privateMessageRecipientId: string | undefined;
