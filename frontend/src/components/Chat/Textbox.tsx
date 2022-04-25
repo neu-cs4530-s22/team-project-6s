@@ -4,19 +4,21 @@ import ChatIcon from '../VideoCall/VideoFrontend/icons/ChatIcon';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
-import { useAppSelector, useAppDispatch } from '../../redux/reduxHooks'
-import useConversationAreas from '../../hooks/useConversationAreas';
+import { useAppSelector } from '../../redux/reduxHooks';
+import useMaybeVideo from '../../hooks/useMaybeVideo';
 
 export default function Textbox(): JSX.Element {
-    const [message, setMessage] = useState<string | File>('');
-    const [inChat, setInChat] = useState(false);
-    const {apiClient, sessionToken, currentTownID, myPlayerID} = useCoveyAppState();
-    const toast = useToast();
-    const players = usePlayersInTown();
-    const myPlayer = players.find((player) => player.id === myPlayerID);
-    const recipient = useAppSelector((state) => state.recipient.recipient)
-    const convoAreas = useConversationAreas();
-    // const dispatch = useAppDispatch()
+  const [message, setMessage] = useState<string | File>('');
+  const [inChat, setInChat] = useState(false);
+  const { apiClient, sessionToken, currentTownID, myPlayerID } = useCoveyAppState();
+  const toast = useToast();
+  const players = usePlayersInTown();
+  const myPlayer = players.find((player) => player.id === myPlayerID);
+  const recipient = useAppSelector((state) => state.recipient.recipient)
+  const video = useMaybeVideo()
+  const [focused, setFocused] = React.useState(false);
+  const onFocus = () => setFocused(true);
+  const onBlur = () => setFocused(false);
 
   const sendMessage = async (messageBody: string | File, date: Date, privateMessage: boolean, privateMessageRecipientId?: string) => {
     try {
@@ -64,8 +66,15 @@ export default function Textbox(): JSX.Element {
       checkIfInChat();
     });
 
+  useEffect(() => {
+    if(focused){
+      video?.pauseGame();
+    }else{
+      video?.unPauseGame();
+    }
+  }, [focused, video]);
+
   function UploadFiles(): JSX.Element {
-    // const [file, setFile] = useState<File>();
 
     return (
       <>
@@ -97,26 +106,25 @@ export default function Textbox(): JSX.Element {
     }
     return messageToConvert;
   }
-
-    const configureMessage = async () => {
-      if (recipient === 'Everyone') {
-        await sendMessage(message, new Date(), false, undefined);
-      }
-      else {
-        await sendMessage(message, new Date(), true, recipient);
-      }
-    } 
-
-    return (
-      <>
+  const configureMessage = async () => {
+    if (recipient === 'Everyone') {
+      await sendMessage(message, new Date(), false, undefined);
+    }
+    else {
+      await sendMessage(message, new Date(), true, recipient);
+    }
+  } 
+ 
+  return (
+    <>
       <VStack>
-      <div>
-        <div style={{float: 'left'}}>
-          <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onChange={(e) => {setMessage(e.target.value)}} onKeyPress={async (e) => {if (e.key === "Enter") { await configureMessage() }}}/>
-        </div>
-        <div style={{overflow: 'hidden'}}>
-          <Button data-testid="send-button" style={{float: 'left'}} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
-        </div>
+        <div>
+          <div style={{ float: 'left' }}>
+            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} />
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
+          </div>
       </div>
       <UploadFiles />
       </VStack>
