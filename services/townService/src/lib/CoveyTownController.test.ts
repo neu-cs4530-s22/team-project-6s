@@ -11,7 +11,6 @@ import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHand
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 import Chat, { CHAT_RADIUS } from '../types/Chat';
-import { getExpectedBodyHash } from 'twilio/lib/webhooks/webhooks';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -48,8 +47,8 @@ describe('CoveyTownController', () => {
   describe('town listeners and events', () => {
     let testingTown: CoveyTownController;
     const mockListeners = [mock<CoveyTownListener>(),
-    mock<CoveyTownListener>(),
-    mock<CoveyTownListener>()];
+      mock<CoveyTownListener>(),
+      mock<CoveyTownListener>()];
     beforeEach(() => {
       const townName = `town listeners and events tests ${nanoid()}`;
       testingTown = new CoveyTownController(townName, false);
