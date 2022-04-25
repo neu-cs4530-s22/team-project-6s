@@ -6,7 +6,6 @@ import Player from '../../classes/Player';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import useNearbyPlayers from '../../hooks/useNearbyPlayers';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
-import { useAppSelector } from '../../redux/reduxHooks'
 import { setRecipient } from '../../redux/slice'
 
 export default function SenderDropdown(): JSX.Element {

@@ -117,11 +117,7 @@ export default function Textbox(): JSX.Element {
             <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={messageToString(message)} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} />
           </div>
           <div style={{ overflow: 'hidden' }}>
-            {recipient === 'Everyone' ?
-              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await sendMessage(message, new Date(), false, undefined) }}><ChatIcon /></Button>
-              :
-              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await sendMessage(message, new Date(), true, recipient) }}><ChatIcon /></Button>
-            }
+              <Button data-testid="send-button" style={{ float: 'left' }} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
           </div>
       </div>
       <UploadFiles />
