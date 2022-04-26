@@ -52,7 +52,6 @@ export default function Textbox(): JSX.Element {
 
     function checkIfInConvoArea() {
       const caWithMyPlayerAsOccupant = convoAreas.filter((ca) => ca.occupants.includes(myPlayerID));
-      console.log(caWithMyPlayerAsOccupant);
       return caWithMyPlayerAsOccupant;
     }
 

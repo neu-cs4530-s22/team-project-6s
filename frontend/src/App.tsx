@@ -225,7 +225,6 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         }
       });
       socket.on('chatUpdated', (chat: Chat) => {
-        // console.log(chat);
         // if chat is updated replace the entry, if newly created add it
         if (localChats.find((c) => c._id === chat._id)) {
           localChats = localChats.filter((c) => c._id !== chat._id);
