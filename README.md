@@ -49,4 +49,4 @@ The frontend will automatically re-compile and reload in your browser if you cha
 ### Note about deployment
 
 We deployed using Netlify using the course instructions.
-The link - https://6261a2f7dcc9ce375fcd71d5--vigorous-johnson-5a3718.netlify.app/
+The link - https://main--vigorous-johnson-5a3718.netlify.app/
