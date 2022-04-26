@@ -388,33 +388,6 @@ class CoveyGameScene extends Phaser.Scene {
       // the map
     });
 
-/*     const chatAreaObjects = map.filterObjects(
-      'Objects',
-      obj => obj.type === 'chat',
-    );
-    const chatSprites = map.createFromObjects(
-      'Objects',
-      chatAreaObjects.map(obj => ({ id: obj.id })),
-    );
-    this.physics.world.enable(chatSprites);
-    chatSprites.forEach(chat => {
-      const sprite = chat as Phaser.GameObjects.Ellipse;
-      sprite.y += sprite.displayHeight;
-      const labelText = this.add.text(
-        sprite.x - sprite.displayWidth / 2,
-        sprite.y - sprite.displayHeight / 2,
-        conversation.name,
-        { color: '#FFFFFF', backgroundColor: '#000000' },
-      );
-      sprite.setTintFill();
-      sprite.fillColor();
-      sprite.setAlpha(0.3);
-
-      this.chatAreas.push({
-        sprite,
-      });
-    }); */
-
     const conversationAreaObjects = map.filterObjects(
       'Objects',
       obj => obj.type === 'conversation',

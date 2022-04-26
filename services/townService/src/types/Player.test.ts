@@ -104,8 +104,6 @@ describe('isAround tests', () => {
     expect(player2.isAround(player3)).toBe(true);
     expect(player3.isAround(player2)).toBe(true);
     expect(player3.isAround(anchorPlayer)).toBe(true);
-
-    // need other case where coordinates are function of radius
   });
 });
 describe('isWithinChat tests', () => {

@@ -15,7 +15,6 @@ function displayMessage(messageBody: string, messageType: string): JSX.Element {
                 src={JSON.parse(potential).file}
                 alt="message"
                 style={{float: messageType === 'sent' ? 'right' : 'left'}}
-                /* flosat={messageType === 'sent' ? 'right' : 'left'} */
             />
         );
     }

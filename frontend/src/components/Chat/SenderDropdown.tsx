@@ -38,7 +38,7 @@ export default function SenderDropdown() : JSX.Element{
 
   return (
     <Menu size="sm" closeOnSelect>
-      <MenuButton /* isDisabled={!inChat} */>
+      <MenuButton>
         {`Send to: ${recipientName}`}
       </MenuButton>
       <MenuList data-testid="recipient-dropdown" minWidth='240px'>
