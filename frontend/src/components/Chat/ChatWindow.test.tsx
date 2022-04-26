@@ -1,5 +1,5 @@
 import React from "react";
-import { RenderResult , render, fireEvent } from "@testing-library/react";
+import { RenderResult , render } from "@testing-library/react";
 import { ChakraProvider } from '@chakra-ui/react'
 import "@testing-library/jest-dom/extend-expect";
 import '@testing-library/jest-dom'
