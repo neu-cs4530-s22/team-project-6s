@@ -122,7 +122,7 @@ export default function Textbox(): JSX.Element {
       <VStack>
         <div>
           <div style={{ float: 'left' }}>
-            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} onKeyPress={async (e) => { if (e.key === "Enter") { await configureMessage() } }} />
+            <Input data-testid="message-box" isDisabled={!inChat} placeholder='Message' size='lg' value={message} onFocus={onFocus} onBlur={onBlur} onChange={(e) => { setMessage(e.target.value) }} />
           </div>
           <div style={{ overflow: 'hidden' }}>
             <Button data-testid="send-button" isDisabled={!inChat} style={{ float: 'left' }} size='lg' onClick={async () => { await configureMessage() }}><ChatIcon /></Button>
